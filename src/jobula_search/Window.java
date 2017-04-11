@@ -27,11 +27,19 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import java.awt.Component;
+import java.awt.Dimension;
+
 import javax.swing.UIManager;
 import java.awt.SystemColor;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.ListSelectionModel;
+import javax.swing.JSplitPane;
+import javax.swing.JScrollPane;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.GridLayout;
 
 public class Window {
 
@@ -73,17 +81,19 @@ public class Window {
 	 */
 	private void initialize() {
 		frmJobula = new JFrame();
+		frmJobula.setBackground(SystemColor.control);
+		frmJobula.getContentPane().setBackground(SystemColor.control);
 		frmJobula.setTitle("Jobula - Job search tool v2.6.1");
 		frmJobula.setBounds(100, 100, 850, 400);
 		frmJobula.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frmJobula.getContentPane().setLayout(null);
+		frmJobula.setMinimumSize(new Dimension(850, 400));
+		frmJobula.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JToolBar toolBar = new JToolBar();
 		toolBar.setBackground(SystemColor.control);
 		toolBar.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		toolBar.setFloatable(false);
-		toolBar.setBounds(0, 0, 834, 24);
-		frmJobula.getContentPane().add(toolBar);
+		frmJobula.getContentPane().add(toolBar, BorderLayout.NORTH);
 		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setBackground(SystemColor.control);
@@ -102,11 +112,14 @@ public class Window {
 		mnHelp.setBackground(SystemColor.control);
 		menuBar.add(mnHelp);
 		
+		JPanel panel = new JPanel();
+		frmJobula.getContentPane().add(panel);
+		panel.setLayout(new BorderLayout(0, 0));
+		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		panel.add(tabbedPane);
 		tabbedPane.setBackground(SystemColor.control);
 		tabbedPane.setBorder(new MatteBorder(1, 10, 10, 10, (Color) new Color(240, 240, 240)));
-		tabbedPane.setBounds(0, 24, 834, 337);
-		frmJobula.getContentPane().add(tabbedPane);
 		
 		JPanel panel_settings = new JPanel();
 		panel_settings.setBackground(SystemColor.window);
@@ -245,10 +258,16 @@ public class Window {
 		panel_settings.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{text_search, combo_source, text_city, combo_country, combo_type, combo_jobtype, spinner_age, spinner_radius, spinner_limit, chckbxCheckForEmail, chckbxCheckForPhone, btnSearch}));
 		
 		JPanel panel_search = new JPanel();
-		panel_search.setLayout(null);
+		panel_search.setBorder(null);
 		tabbedPane.addTab("Job List", null, panel_search, null);
+		panel_search.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane scrollPane = new JScrollPane();
+		panel_search.add(scrollPane);
 		
 		job_table = new JTable();
+		job_table.setFillsViewportHeight(true);
+		scrollPane.setViewportView(job_table);
 		job_table.setForeground(new Color(0, 0, 0));
 		job_table.setCellSelectionEnabled(true);
 		job_table.setBackground(SystemColor.window);
@@ -260,8 +279,10 @@ public class Window {
 				"Title", "Company", "City", "Ad age", "Summary"
 			}
 		));
+		job_table.getColumnModel().getColumn(3).setPreferredWidth(80);
+		job_table.getColumnModel().getColumn(3).setMaxWidth(80);
+		job_table.getColumnModel().getColumn(4).setPreferredWidth(150);
+		job_table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		job_table.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		job_table.setBounds(0, 0, 809, 298);
-		panel_search.add(job_table);
 	}
 }
