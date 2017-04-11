@@ -129,26 +129,6 @@ public class Indeed {
 		return link;
 	}
 	
-//	public void get_Post(String link_url) {
-//		try {
-//			URL url = new URL(link_url);
-//			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//			connection.setDoOutput(true);
-//			connection.setInstanceFollowRedirects(false);
-//			connection.setRequestMethod("POST");
-//			connection.setRequestProperty("Content-Type", "application/xml");
-//			
-//			OutputStream os = (OutputStream) connection.getOutputStream();
-//			//write xml to outputstream
-//			System.out.print(os.toString());
-//			os.flush();
-//			connection.getResponseCode();
-//			connection.disconnect();
-//		} catch (Exception e) {
-//			System.out.println(e);
-//		}
-//	}
-	
 	public void get_Post(String link_url) throws TransformerException, IOException, ParserConfigurationException, SAXException {
 		URL url = new URL(link_url);
 		URLConnection conn = url.openConnection();
@@ -160,6 +140,10 @@ public class Indeed {
 		TransformerFactory factory2 = TransformerFactory.newInstance();
 		Transformer xform = factory2.newTransformer();
 		
+		doc.getDocumentElement().normalize();
+		
 		xform.transform(new DOMSource(doc), new StreamResult(System.out));
+		
+		
 	}
 }
