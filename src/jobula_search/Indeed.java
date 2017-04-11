@@ -3,8 +3,11 @@
  */
 package jobula_search;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -13,8 +16,20 @@ import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.omg.CORBA_2_3.portable.OutputStream;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * @author atreyu-win10
@@ -44,8 +59,9 @@ public class Indeed {
 	public static String country = "Canada";
 	public static String channel = "neptuneSearch_Java";
 	public static String userip = "";
-	public static String userAgent = "";
+	public static String userAgent = "Mozilla/5.0";
 	public static String html = "http://api.indeed.com/ads/apisearch?publisher=";
+	
 	private JTextField text_search;
 	private Object source_s;
 	private JTextField city_s;
@@ -113,23 +129,37 @@ public class Indeed {
 		return link;
 	}
 	
-	public void get_Post(String link_url) {
-		try {
-			URL url = new URL(link_url);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setDoOutput(true);
-			connection.setInstanceFollowRedirects(false);
-			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Content-Type", "application/xml");
-			
-			OutputStream os = (OutputStream) connection.getOutputStream();
-			//write xml to outputstream
-			System.out.print(os.toString());
-			os.flush();
-			connection.getResponseCode();
-			connection.disconnect();
-		} catch (Exception e) {
-			System.out.println(e);
-		}
+//	public void get_Post(String link_url) {
+//		try {
+//			URL url = new URL(link_url);
+//			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//			connection.setDoOutput(true);
+//			connection.setInstanceFollowRedirects(false);
+//			connection.setRequestMethod("POST");
+//			connection.setRequestProperty("Content-Type", "application/xml");
+//			
+//			OutputStream os = (OutputStream) connection.getOutputStream();
+//			//write xml to outputstream
+//			System.out.print(os.toString());
+//			os.flush();
+//			connection.getResponseCode();
+//			connection.disconnect();
+//		} catch (Exception e) {
+//			System.out.println(e);
+//		}
+//	}
+	
+	public void get_Post(String link_url) throws TransformerException, IOException, ParserConfigurationException, SAXException {
+		URL url = new URL(link_url);
+		URLConnection conn = url.openConnection();
+		
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(conn.getInputStream());
+		
+		TransformerFactory factory2 = TransformerFactory.newInstance();
+		Transformer xform = factory2.newTransformer();
+		
+		xform.transform(new DOMSource(doc), new StreamResult(System.out));
 	}
 }

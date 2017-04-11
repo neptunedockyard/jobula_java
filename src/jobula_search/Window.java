@@ -25,7 +25,11 @@ import javax.swing.JButton;
 import javax.swing.JProgressBar;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+
 import org.eclipse.wb.swing.FocusTraversalOnArray;
+import org.xml.sax.SAXException;
+
 import java.awt.Component;
 import java.awt.Dimension;
 
@@ -33,6 +37,8 @@ import javax.swing.UIManager;
 import java.awt.SystemColor;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.swing.ListSelectionModel;
 import javax.swing.JSplitPane;
 import javax.swing.JScrollPane;
@@ -40,6 +46,10 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.GridLayout;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JSeparator;
+import javax.swing.ImageIcon;
 
 public class Window {
 
@@ -123,13 +133,87 @@ public class Window {
 		mnFile.setBackground(SystemColor.control);
 		menuBar.add(mnFile);
 		
+		JMenuItem menuNew = new JMenuItem("New");
+		menuNew.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/File.gif")));
+		menuNew.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/File.gif")));
+		mnFile.add(menuNew);
+		
+		JMenuItem menuOpen = new JMenuItem("Open");
+		menuOpen.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Directory.gif")));
+		menuOpen.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Directory.gif")));
+		mnFile.add(menuOpen);
+		
+		JSeparator separator = new JSeparator();
+		mnFile.add(separator);
+		
+		JMenuItem menuSave = new JMenuItem("Save Search As");
+		menuSave.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/FloppyDrive.gif")));
+		menuSave.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/FloppyDrive.gif")));
+		mnFile.add(menuSave);
+		
+		JMenuItem menuExport = new JMenuItem("Export as CSV");
+		menuExport.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/HardDrive.gif")));
+		menuExport.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/HardDrive.gif")));
+		mnFile.add(menuExport);
+		
+		JSeparator separator_1 = new JSeparator();
+		mnFile.add(separator_1);
+		
+		JMenuItem menuExit = new JMenuItem("Exit");
+		menuExit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				System.exit(0);
+			}
+		});
+		menuExit.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/HomeFolder.gif")));
+		menuExit.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Error.gif")));
+		mnFile.add(menuExit);
+		
 		JMenu mnEdit = new JMenu("Edit");
 		mnEdit.setBackground(SystemColor.control);
 		menuBar.add(mnEdit);
 		
+		JMenuItem menuCopy = new JMenuItem("Copy");
+		menuCopy.setIcon(new ImageIcon(Window.class.getResource("/com/sun/javafx/scene/web/skin/Copy_16x16_JFX.png")));
+		menuCopy.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/javafx/scene/web/skin/Copy_16x16_JFX.png")));
+		mnEdit.add(menuCopy);
+		
+		JMenuItem menuSelect = new JMenuItem("Select All");
+		menuSelect.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/DetailsView.gif")));
+		menuSelect.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/DetailsView.gif")));
+		mnEdit.add(menuSelect);
+		
 		JMenu mnHelp = new JMenu("Help");
 		mnHelp.setBackground(SystemColor.control);
 		menuBar.add(mnHelp);
+		
+		JMenuItem menuHow = new JMenuItem("How to use");
+		menuHow.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				JOptionPane.showMessageDialog(null, "This tool allows you to easily search popular job portals.\r\n"
+						+ "For the best search results, the following can be used:\r\n"
+						+ "specific strings: ex. \"civil engineer\"\r\n"
+						+ "inclusive strings: ex. +technician\r\n"
+						+ "exclusive strings: ex. -manager\r\n\r\n"
+						+ "To expand an ad, double click it to open in a browser.", "How to use this tool", JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		menuHow.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Inform.gif")));
+		menuHow.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Inform.gif")));
+		mnHelp.add(menuHow);
+		
+		JMenuItem menuAbout = new JMenuItem("About...");
+		menuAbout.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				JOptionPane.showMessageDialog(null, "Jobula Search Tool\r\nVersion 2.6.1\r\nAuthor: neptuneDockyard", "About", JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		menuAbout.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Question.gif")));
+		menuAbout.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Question.gif")));
+		mnHelp.add(menuAbout);
 		
 		JPanel panel = new JPanel();
 		frmJobula.getContentPane().add(panel);
@@ -261,7 +345,21 @@ public class Window {
 				System.out.println("test");
 				indeed.collect_Data();
 				String url = indeed.Generate_Link();
-				indeed.get_Post(url);
+				try {
+					indeed.get_Post(url);
+				} catch (TransformerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParserConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		btnSearch.setFont(new Font("Tahoma", Font.PLAIN, 12));
