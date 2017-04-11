@@ -44,9 +44,24 @@ import java.awt.GridLayout;
 public class Window {
 
 	private JFrame frmJobula;
-	private JTextField text_search;
-	private JTextField text_city;
-	private JTable job_table;
+	private static JTextField text_search;
+	private static JTextField text_city;
+	private static JTable job_table;
+	
+	private static JComboBox<?> combo_source;
+	private static JComboBox<?> combo_country;
+	private static JComboBox<?> combo_type;
+	private static JComboBox<?> combo_jobtype;
+	private static JSpinner spinner_age;
+	private static JSpinner spinner_radius;
+	private static JSpinner spinner_limit;
+	private static JCheckBox chckbxCheckForEmail;
+	private static JCheckBox chckbxCheckForPhone;
+	private static JLabel lblResults;
+	private static JProgressBar progressBar;
+	
+	
+	private static Indeed indeed;
 
 	/**
 	 * Launch the application.
@@ -62,6 +77,10 @@ public class Window {
 				try {
 					Window window = new Window();
 					window.frmJobula.setVisible(true);
+					indeed = new Indeed(text_search, combo_source, text_city, combo_country,
+							combo_type, combo_jobtype, spinner_age, spinner_radius,
+							spinner_limit, chckbxCheckForEmail, chckbxCheckForPhone, lblResults,
+							progressBar, job_table);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -147,7 +166,7 @@ public class Window {
 		panel_settings.add(text_search);
 		text_search.setColumns(10);
 		
-		JComboBox combo_source = new JComboBox();
+		combo_source = new JComboBox();
 		combo_source.setToolTipText("which job search source website?");
 		combo_source.setModel(new DefaultComboBoxModel(new String[] {"Indeed"}));
 		combo_source.setBounds(140, 36, 120, 20);
@@ -158,7 +177,7 @@ public class Window {
 		panel_settings.add(text_city);
 		text_city.setColumns(10);
 		
-		JComboBox combo_country = new JComboBox();
+		combo_country = new JComboBox();
 		combo_country.setModel(new DefaultComboBoxModel(new String[] {"Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua & Deps", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Rep", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Congo {Democratic Rep}", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland {Republic}", "Israel", "Italy", "Ivory Coast", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea North", "Korea South", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar, {Burma}", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russian Federation", "Rwanda", "St Kitts & Nevis", "St Lucia", "Saint Vincent & the Grenadines", "Samoa", "San Marino", "Sao Tome & Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad & Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"}));
 		combo_country.setSelectedIndex(30);
 		combo_country.setBounds(400, 36, 120, 20);
@@ -189,26 +208,26 @@ public class Window {
 		lblRadiuskm.setBounds(400, 67, 65, 14);
 		panel_settings.add(lblRadiuskm);
 		
-		JComboBox combo_type = new JComboBox();
+		combo_type = new JComboBox();
 		combo_type.setToolTipText("jobsite for job boards, employer for direct employers");
 		combo_type.setModel(new DefaultComboBoxModel(new String[] {"employer", "jobsite"}));
 		combo_type.setSelectedIndex(0);
 		combo_type.setBounds(10, 92, 120, 20);
 		panel_settings.add(combo_type);
 		
-		JComboBox combo_jobtype = new JComboBox();
+		combo_jobtype = new JComboBox();
 		combo_jobtype.setModel(new DefaultComboBoxModel(new String[] {"fulltime", "parttime", "contract", "internship", "temporary"}));
 		combo_jobtype.setSelectedIndex(0);
 		combo_jobtype.setBounds(140, 92, 120, 20);
 		panel_settings.add(combo_jobtype);
 		
-		JSpinner spinner_age = new JSpinner();
+		spinner_age = new JSpinner();
 		spinner_age.setToolTipText("how long ago was the ad posted?");
 		spinner_age.setModel(new SpinnerNumberModel(15, 0, 30, 1));
 		spinner_age.setBounds(270, 92, 120, 20);
 		panel_settings.add(spinner_age);
 		
-		JSpinner spinner_radius = new JSpinner();
+		spinner_radius = new JSpinner();
 		spinner_radius.setToolTipText("distance from your chosen location");
 		spinner_radius.setModel(new SpinnerNumberModel(10, 10, 250, 10));
 		spinner_radius.setBounds(400, 92, 120, 20);
@@ -219,18 +238,18 @@ public class Window {
 		lblAdLimit.setBounds(10, 123, 46, 14);
 		panel_settings.add(lblAdLimit);
 		
-		JSpinner spinner_limit = new JSpinner();
+		spinner_limit = new JSpinner();
 		spinner_limit.setToolTipText("the number of ads shown");
 		spinner_limit.setModel(new SpinnerNumberModel(100, 1, 500, 1));
 		spinner_limit.setBounds(10, 148, 120, 20);
 		panel_settings.add(spinner_limit);
 		
-		JCheckBox chckbxCheckForEmail = new JCheckBox("Check for email");
+		chckbxCheckForEmail = new JCheckBox("Check for email");
 		chckbxCheckForEmail.setToolTipText("scan postings for email addresses for direct contact");
 		chckbxCheckForEmail.setBounds(10, 175, 120, 23);
 		panel_settings.add(chckbxCheckForEmail);
 		
-		JCheckBox chckbxCheckForPhone = new JCheckBox("Check for phone number");
+		chckbxCheckForPhone = new JCheckBox("Check for phone number");
 		chckbxCheckForPhone.setToolTipText("scan postings for phone numbers for direct contact, experimental!");
 		chckbxCheckForPhone.setBounds(10, 201, 176, 23);
 		panel_settings.add(chckbxCheckForPhone);
@@ -240,18 +259,21 @@ public class Window {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				System.out.println("test");
+				indeed.collect_Data();
+				String url = indeed.Generate_Link();
+				indeed.get_Post(url);
 			}
 		});
 		btnSearch.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		btnSearch.setBounds(10, 269, 89, 23);
 		panel_settings.add(btnSearch);
 		
-		JLabel lblResults = new JLabel("Results: ");
+		lblResults = new JLabel("Results: ");
 		lblResults.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblResults.setBounds(109, 273, 46, 14);
 		panel_settings.add(lblResults);
 		
-		JProgressBar progressBar = new JProgressBar();
+		progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
 		progressBar.setBounds(244, 271, 276, 23);
 		panel_settings.add(progressBar);
