@@ -8,6 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Map;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -16,6 +18,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -27,6 +30,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.omg.CORBA_2_3.portable.OutputStream;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -61,6 +67,9 @@ public class Indeed {
 	public static String userip = "";
 	public static String userAgent = "Mozilla/5.0";
 	public static String html = "http://api.indeed.com/ads/apisearch?publisher=";
+	
+	private int start_page;
+	private int end_page;
 	
 	private JTextField text_search;
 	private Object source_s;
@@ -129,7 +138,7 @@ public class Indeed {
 		return link;
 	}
 	
-	public void get_Post(String link_url) throws TransformerException, IOException, ParserConfigurationException, SAXException {
+	public Element get_Post(String link_url) throws SAXException, IOException, ParserConfigurationException {
 		URL url = new URL(link_url);
 		URLConnection conn = url.openConnection();
 		
@@ -137,13 +146,94 @@ public class Indeed {
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document doc = builder.parse(conn.getInputStream());
 		
-		TransformerFactory factory2 = TransformerFactory.newInstance();
-		Transformer xform = factory2.newTransformer();
+		Element root = doc.getDocumentElement();
+		NodeList nodes = root.getChildNodes();
+		NodeList resultsNodes;
+		ArrayList<String> nodeArray = new ArrayList<String>();
 		
-		doc.getDocumentElement().normalize();
-		
-		xform.transform(new DOMSource(doc), new StreamResult(System.out));
-		
-		
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+
+			System.out.println(node.getNodeName());
+			if (node.getNodeName() == "totalresults") {
+				System.out.println(node.getFirstChild().getNodeValue());
+				resultnumber_s.setText(node.getFirstChild().getNodeValue());
+			} else if (node.getNodeName() == "start") {
+				System.out.println("start page: "+node.getFirstChild().getNodeValue());
+				this.start_page = Integer.parseInt(node.getFirstChild().getNodeValue());
+			} else if (node.getNodeName() == "end") {
+				System.out.println("end page: "+node.getFirstChild().getNodeValue());
+				this.end_page = Integer.parseInt(node.getFirstChild().getNodeValue());
+			}
+		}
+		return root;
 	}
+	
+/*	public ArrayList<String> parse_Element(Element element) {
+		NodeList nodeList = element.getElementsByTagName("result");
+		ArrayList<String> list = new ArrayList<String>();
+		Object[][] parsed_data;
+		
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			list.add(getTextValue(nodeList.item(i)));
+		}
+		System.out.println("parsed");
+		System.out.print(list.toString());
+		return list;
+	}
+
+	public String getTextValue(Node node) {
+		// TODO Auto-generated method stub
+		StringBuffer buff = new StringBuffer();
+		int length = node.getChildNodes().getLength();
+		for (int i = 0; i < length; i++) {
+			Node c = node.getChildNodes().item(i);
+			if (c.getNodeType() == Node.TEXT_NODE) {
+				buff.append(c.getNodeValue());
+			}
+		}
+		return buff.toString().trim();
+	}*/
+	
+	@SuppressWarnings("null")
+	public Object[][] parse_Element(Element element) {
+		NodeList nodeList = element.getElementsByTagName("results");
+		NodeList subNodeList = nodeList.item(0).getChildNodes();
+		int length = subNodeList.getLength();
+		Object[][] parsed_data = new Object[Integer.parseInt(this.resultnumber_s.getText())][6];
+		
+		System.out.println("length: " + length);
+		if(subNodeList != null) {
+			for (int index = 0; index < length; index++) {
+				if(subNodeList.item(index).getNodeType() == Node.ELEMENT_NODE) {
+					Element eln = (Element) subNodeList.item(index);
+					if(eln.getNodeName().contains("result")) {
+						parsed_data[index][0] = eln.getElementsByTagName("jobtitle").item(0).getTextContent();
+						parsed_data[index][1] = eln.getElementsByTagName("company").item(0).getTextContent();
+						parsed_data[index][2] = eln.getElementsByTagName("formattedLocation").item(0).getTextContent();
+						parsed_data[index][3] = eln.getElementsByTagName("formattedRelativeTime").item(0).getTextContent();
+						parsed_data[index][4] = eln.getElementsByTagName("snippet").item(0).getTextContent();
+						parsed_data[index][5] = eln.getElementsByTagName("url").item(0).getTextContent();
+					}
+				}
+			}
+		}
+		return parsed_data;
+	}
+
+	/*private String getXMLValue(Node node, String header_string) {
+		// TODO Auto-generated method stub
+		int length = node.getChildNodes().getLength();
+		for (int idx = 0; idx < length; idx++) {
+			Node c = node.getChildNodes().item(idx);
+			String temp = c.getFirstChild().getNodeName();
+			String value = c.getNodeValue();
+			if (c.getNodeName() == header_string) {
+				return c.getNodeValue();
+			} else {
+				return "fail";
+			}
+		}
+		return null;
+	}*/
 }

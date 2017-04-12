@@ -26,8 +26,10 @@ import javax.swing.JProgressBar;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import java.awt.Component;
@@ -346,10 +348,8 @@ public class Window {
 				indeed.collect_Data();
 				String url = indeed.Generate_Link();
 				try {
-					indeed.get_Post(url);
-				} catch (TransformerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Element elm = indeed.get_Post(url);
+					Object[][] parsed = indeed.parse_Element(elm);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
