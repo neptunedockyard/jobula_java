@@ -63,7 +63,7 @@ public class Indeed {
 	public static String sitetype = "jobsite";
 	public static String jobtype = "fulltime";
 //	public static int start = 0;
-	public static int limit = 10;
+	public static int limit = 100;
 	public static int fromage = 15;
 	public static int highlight = 0;
 	public static int filter = 1;
@@ -121,7 +121,7 @@ public class Indeed {
 		radius = (int) radius_s.getValue();
 		sitetype = emptype_s.getSelectedItem().toString();
 		jobtype = jobtype_s.getSelectedItem().toString();
-		limit = (int) limit_s.getValue();
+//		limit = (int) limit_s.getValue();					//this limit is actually how many ads per page, leave set to 100
 		fromage = (int) age_s.getValue();
 		country = country_s.getSelectedItem().toString();
 	}

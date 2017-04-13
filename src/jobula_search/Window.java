@@ -384,7 +384,7 @@ public class Window {
 					parsed[0] = indeed.parse_Element(elm);
 					
 //					Object[][] all_parsed_data = new Object[((indeed.resnum/25)+1)*25][0];			//with padding
-					Object[][] all_parsed_data = new Object[indeed.resnum+1][0];						//without padding
+					Object[][] all_parsed_data = new Object[indeed.resnum][0];						//without padding
 					System.arraycopy(parsed[0], 0, all_parsed_data, 0, parsed[0].length);
 					pages--;
 					
@@ -393,8 +393,6 @@ public class Window {
 					while(pages > 0) {
 						System.out.println("total pages left: "+indeed.total_pages+", "+pages);
 						parsed[parse_idx] = indeed.parse_Element(indeed.get_Post(indeed.Generate_Link()));
-//						all_parsed_data = indeed.append(all_parsed_data, parsed[parse_idx]);
-//						System.out.println("parse idx: "+parse_idx+" pi*length: "+parse_idx*parsed[parse_idx].length+" length: "+parsed[parse_idx].length);
 						System.arraycopy(parsed[parse_idx], 0, all_parsed_data, parse_idx*parsed[parse_idx-1].length, parsed[parse_idx].length);
 						parse_idx++;
 						pages--;
