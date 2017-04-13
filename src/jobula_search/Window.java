@@ -39,6 +39,7 @@ import javax.swing.UIManager;
 import java.awt.SystemColor;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.swing.ListSelectionModel;
@@ -52,6 +53,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.ImageIcon;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Window {
 
@@ -248,6 +251,12 @@ public class Window {
 		panel_settings.add(lblCity);
 		
 		text_search = new JTextField();
+		text_search.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				/*check if enter key used*/
+			}
+		});
 		text_search.setBounds(10, 36, 120, 20);
 		panel_settings.add(text_search);
 		text_search.setColumns(10);
@@ -259,6 +268,12 @@ public class Window {
 		panel_settings.add(combo_source);
 		
 		text_city = new JTextField();
+		text_city.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				/*check if enter key used*/
+			}
+		});
 		text_city.setBounds(270, 36, 120, 20);
 		panel_settings.add(text_city);
 		text_city.setColumns(10);
@@ -345,11 +360,49 @@ public class Window {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				System.out.println("test");
+				//first have to reset start page since last click
+				indeed.start_page = 0;
+				
+				//collect data from all the fields in gui
 				indeed.collect_Data();
-				String url = indeed.Generate_Link();
+				
+				//generate the first url, which will return all the needed info for number of pages,
+				//total number of jobs, etc
+				String first_url = indeed.Generate_Link();
+				
+				//because of some exceptions, try to obtain the DOM information, total page number, 
+				//and parsed data
+				//the parsed data is put into an array of 2D objects, which will become the data
+				//for the jtable
 				try {
-					Element elm = indeed.get_Post(url);
-					Object[][] parsed = indeed.parse_Element(elm);
+					//first round that gets all the information
+					Element elm = indeed.get_Post(first_url);
+					int pages = indeed.total_pages;
+					System.out.println("Total pages: "+pages);
+//					Object[][] all_parsed_data = indeed.parse_Element(elm);		//for single use
+					Object[][] parsed = new Object[pages][25];
+					parsed[0] = indeed.parse_Element(elm);
+					
+//					Object[][] all_parsed_data = new Object[((indeed.resnum/25)+1)*25][0];			//with padding
+					Object[][] all_parsed_data = new Object[indeed.resnum+1][0];						//without padding
+					System.arraycopy(parsed[0], 0, all_parsed_data, 0, parsed[0].length);
+					pages--;
+					
+					//subsequent rounds to fill table
+					int parse_idx = 1;
+					while(pages > 0) {
+						System.out.println("total pages left: "+indeed.total_pages+", "+pages);
+						parsed[parse_idx] = indeed.parse_Element(indeed.get_Post(indeed.Generate_Link()));
+//						all_parsed_data = indeed.append(all_parsed_data, parsed[parse_idx]);
+//						System.out.println("parse idx: "+parse_idx+" pi*length: "+parse_idx*parsed[parse_idx].length+" length: "+parsed[parse_idx].length);
+						System.arraycopy(parsed[parse_idx], 0, all_parsed_data, parse_idx*parsed[parse_idx-1].length, parsed[parse_idx].length);
+						parse_idx++;
+						pages--;
+					}
+					
+					//update table with collected data
+					TableModel model = new DefaultTableModel(all_parsed_data, indeed.columns);
+					job_table.setModel(model);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
