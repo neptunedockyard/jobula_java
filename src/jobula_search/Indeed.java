@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
@@ -115,21 +118,41 @@ public class Indeed {
 		this.output_table_s = job_table;
 	}
 	
-	public void collect_Data() {
-		query = text_search.getText();
-		location = city_s.getText();
+	public int collect_Data() {
+//		query = !text_search.getText().isEmpty() ? text_search.getText() : "";
+//		location = !city_s.getText().isEmpty() ? city_s.getText() : "";
+		
+		query = text_search.getText().trim().replaceAll("\\s+", "%20");
+		location = city_s.getText().trim().replaceAll("\\s+", "%20");
+		
 		radius = (int) radius_s.getValue();
-		sitetype = emptype_s.getSelectedItem().toString();
-		jobtype = jobtype_s.getSelectedItem().toString();
+		sitetype = emptype_s.getSelectedItem().toString().trim().replaceAll("\\s+", "%20");
+		jobtype = jobtype_s.getSelectedItem().toString().trim().replaceAll("\\s+", "%20");
 //		limit = (int) limit_s.getValue();					//this limit is actually how many ads per page, leave set to 100
 		fromage = (int) age_s.getValue();
-		country = country_s.getSelectedItem().toString();
+		country = country_s.getSelectedItem().toString().trim().replaceAll("\\s+", "%20");
+		
+		System.out.println("q: "+query+" l: "+location);
+		if(query == "ALL") {
+			query = "";
+			return 0;
+		}
+		if(query.trim().isEmpty() || location.trim().isEmpty() ) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+	
+	public void messagePopup() {
+		JOptionPane.showMessageDialog(null, "Please enter all fields", "Search Criteria", JOptionPane.WARNING_MESSAGE);
 	}
 	
 	public String Generate_Link() {
 		//reset the start page to zero
 //		this.start_page = 0;
-		String link = html+publisher+
+		String link = html+
+				publisher+
 				"&q="+query+
 				"&l="+location+
 				"&sort="+sort+
@@ -149,8 +172,8 @@ public class Indeed {
 		return link;
 	}
 	
-	public Element get_Post(String link_url) throws IOException, ParserConfigurationException, SAXException {
-		URL url = new URL(link_url);
+	public Element get_Post(String link) throws IOException, ParserConfigurationException, SAXException {
+		URL url = new URL(link);
 		URLConnection conn = url.openConnection();
 		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -166,9 +189,19 @@ public class Indeed {
 			System.out.println(node.getNodeName());
 			if (node.getNodeName() == "totalresults") {
 				System.out.println(node.getFirstChild().getNodeValue());
-				resnum = Integer.parseInt(node.getFirstChild().getNodeValue());
-				resultnumber_s.setText(node.getFirstChild().getNodeValue());
-				this.total_pages = 1+resnum/25;
+				//the 3 lines here grab the total results from the search, but thru experimentation, looks like 1000 is max
+//				resnum = Integer.parseInt(node.getFirstChild().getNodeValue());
+//				if(resnum >= 1000) {
+//					resnum = 999;
+//				}
+				
+				resnum = (int) limit_s.getValue();
+				resultnumber_s.setText("Results: "+node.getFirstChild().getNodeValue());
+				if(resnum%25 != 0) {
+					this.total_pages = 1+resnum/25;
+				} else {
+					this.total_pages = resnum/25;
+				}
 			} else if (node.getNodeName() == "start") {
 				System.out.println("start page: "+node.getFirstChild().getNodeValue());
 //				this.start_page = Integer.parseInt(node.getFirstChild().getNodeValue());

@@ -20,12 +20,15 @@ import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 import javax.swing.JCheckBox;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
@@ -55,6 +58,8 @@ import javax.swing.JSeparator;
 import javax.swing.ImageIcon;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Window {
 
@@ -63,6 +68,7 @@ public class Window {
 	private static JTextField text_city;
 	private static JTable job_table;
 	
+	private static JTabbedPane tabbedPane;
 	private static JComboBox<?> combo_source;
 	private static JComboBox<?> combo_country;
 	private static JComboBox<?> combo_type;
@@ -74,6 +80,7 @@ public class Window {
 	private static JCheckBox chckbxCheckForPhone;
 	private static JLabel lblResults;
 	private static JProgressBar progressBar;
+	private static JButton btnSearch;
 	
 	
 	private static Indeed indeed;
@@ -92,6 +99,7 @@ public class Window {
 				try {
 					Window window = new Window();
 					window.frmJobula.setVisible(true);
+					SwingUtilities.getRootPane(btnSearch).setDefaultButton(btnSearch);
 					indeed = new Indeed(text_search, combo_source, text_city, combo_country,
 							combo_type, combo_jobtype, spinner_age, spinner_radius,
 							spinner_limit, chckbxCheckForEmail, chckbxCheckForPhone, lblResults,
@@ -224,7 +232,7 @@ public class Window {
 		frmJobula.getContentPane().add(panel);
 		panel.setLayout(new BorderLayout(0, 0));
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		panel.add(tabbedPane);
 		tabbedPane.setBackground(SystemColor.control);
 		tabbedPane.setBorder(new MatteBorder(1, 10, 10, 10, (Color) new Color(240, 240, 240)));
@@ -251,12 +259,6 @@ public class Window {
 		panel_settings.add(lblCity);
 		
 		text_search = new JTextField();
-		text_search.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-				/*check if enter key used*/
-			}
-		});
 		text_search.setBounds(10, 36, 120, 20);
 		panel_settings.add(text_search);
 		text_search.setColumns(10);
@@ -268,12 +270,6 @@ public class Window {
 		panel_settings.add(combo_source);
 		
 		text_city = new JTextField();
-		text_city.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				/*check if enter key used*/
-			}
-		});
 		text_city.setBounds(270, 36, 120, 20);
 		panel_settings.add(text_city);
 		text_city.setColumns(10);
@@ -341,7 +337,7 @@ public class Window {
 		
 		spinner_limit = new JSpinner();
 		spinner_limit.setToolTipText("the number of ads shown");
-		spinner_limit.setModel(new SpinnerNumberModel(100, 1, 500, 1));
+		spinner_limit.setModel(new SpinnerNumberModel(100, 1, 1000, 10));
 		spinner_limit.setBounds(10, 148, 120, 20);
 		panel_settings.add(spinner_limit);
 		
@@ -355,62 +351,92 @@ public class Window {
 		chckbxCheckForPhone.setBounds(10, 201, 176, 23);
 		panel_settings.add(chckbxCheckForPhone);
 		
-		JButton btnSearch = new JButton("Search");
+		btnSearch = new JButton("Search");
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("test");
+				//first have to reset start page and progress since last click
+				indeed.start_page = 0;
+				progressBar.setValue(0);
+				lblResults.setText("Results: ");
+				tabbedPane.setTitleAt(1, "Job List");
+				
+				//collect data from all the fields in gui
+				int fields = indeed.collect_Data();
+				
+				//check if fields were even entered
+				if (fields == -1) {
+					indeed.messagePopup();
+				} else {
+				
+					//generate the first url, which will return all the needed info for number of pages,
+					//total number of jobs, etc
+					String first_url = indeed.Generate_Link();
+					
+					//because of some exceptions, try to obtain the DOM information, total page number, 
+					//and parsed data
+					//the parsed data is put into an array of 2D objects, which will become the data
+					//for the jtable
+					try {
+						//first round that gets all the information
+						Element elm = indeed.get_Post(first_url);
+						int pages = indeed.total_pages;
+						System.out.println("Total pages: "+pages);
+	//					Object[][] all_parsed_data = indeed.parse_Element(elm);		//for single use
+						Object[][] parsed = new Object[pages][25];
+						parsed[0] = indeed.parse_Element(elm);
+						
+	//					Object[][] all_parsed_data = new Object[((indeed.resnum/25)+1)*25][0];			//with padding
+						Object[][] all_parsed_data = new Object[indeed.resnum][0];						//without padding
+						System.arraycopy(parsed[0], 0, all_parsed_data, 0, parsed[0].length);
+						
+						//increment the progress bar
+						progressBar.setValue((int)(100*((double)1/(double)indeed.total_pages)));
+						
+						//decrement total pages left
+						pages--;
+						
+						//subsequent rounds to fill table
+						int parse_idx = 1;
+						while(pages > 0) {
+							System.out.println("total pages left: "+indeed.total_pages+", "+pages);
+							parsed[parse_idx] = indeed.parse_Element(indeed.get_Post(indeed.Generate_Link()));
+							System.out.println(parse_idx);
+							System.out.println(parsed[parse_idx-1].length);
+							System.out.println(parsed[parse_idx].length);
+							System.out.println(all_parsed_data.length);
+							if(parse_idx == 3) {
+								System.out.println("wait here");
+							}
+							System.arraycopy(parsed[parse_idx], 0, all_parsed_data, parse_idx*parsed[parse_idx-1].length, parsed[parse_idx].length);
+							parse_idx++;
+							pages--;
+							progressBar.setValue((int)(100*((double)(indeed.total_pages-pages)/(double)indeed.total_pages)));
+						}
+						
+						//update table with collected data
+						TableModel model = new DefaultTableModel(all_parsed_data, indeed.columns);
+						job_table.setModel(model);
+						
+						//set tab title to include jobs found
+						tabbedPane.setTitleAt(1, "Job List ("+indeed.resnum+")");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ParserConfigurationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SAXException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 		btnSearch.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				System.out.println("test");
-				//first have to reset start page since last click
-				indeed.start_page = 0;
 				
-				//collect data from all the fields in gui
-				indeed.collect_Data();
-				
-				//generate the first url, which will return all the needed info for number of pages,
-				//total number of jobs, etc
-				String first_url = indeed.Generate_Link();
-				
-				//because of some exceptions, try to obtain the DOM information, total page number, 
-				//and parsed data
-				//the parsed data is put into an array of 2D objects, which will become the data
-				//for the jtable
-				try {
-					//first round that gets all the information
-					Element elm = indeed.get_Post(first_url);
-					int pages = indeed.total_pages;
-					System.out.println("Total pages: "+pages);
-//					Object[][] all_parsed_data = indeed.parse_Element(elm);		//for single use
-					Object[][] parsed = new Object[pages][25];
-					parsed[0] = indeed.parse_Element(elm);
-					
-//					Object[][] all_parsed_data = new Object[((indeed.resnum/25)+1)*25][0];			//with padding
-					Object[][] all_parsed_data = new Object[indeed.resnum][0];						//without padding
-					System.arraycopy(parsed[0], 0, all_parsed_data, 0, parsed[0].length);
-					pages--;
-					
-					//subsequent rounds to fill table
-					int parse_idx = 1;
-					while(pages > 0) {
-						System.out.println("total pages left: "+indeed.total_pages+", "+pages);
-						parsed[parse_idx] = indeed.parse_Element(indeed.get_Post(indeed.Generate_Link()));
-						System.arraycopy(parsed[parse_idx], 0, all_parsed_data, parse_idx*parsed[parse_idx-1].length, parsed[parse_idx].length);
-						parse_idx++;
-						pages--;
-					}
-					
-					//update table with collected data
-					TableModel model = new DefaultTableModel(all_parsed_data, indeed.columns);
-					job_table.setModel(model);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ParserConfigurationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SAXException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 		});
 		btnSearch.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -454,6 +480,6 @@ public class Window {
 		job_table.getColumnModel().getColumn(3).setMaxWidth(80);
 		job_table.getColumnModel().getColumn(4).setPreferredWidth(150);
 		job_table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		job_table.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		job_table.setFont(new Font("Tahoma", Font.PLAIN, 11));
 	}
 }
