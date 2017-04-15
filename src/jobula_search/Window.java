@@ -27,6 +27,7 @@ import javax.swing.JProgressBar;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -358,11 +359,18 @@ public class Window {
 				//first have to reset start page and progress since last click
 				indeed.start_page = 0;
 				progressBar.setValue(0);
+				progressBar.repaint();
 				lblResults.setText("Results: ");
 				tabbedPane.setTitleAt(1, "Job List");
 				
 				//collect data from all the fields in gui
-				int fields = indeed.collect_Data();
+				int fields = 0;
+				try {
+					fields = indeed.collect_Data();
+				} catch (MalformedURLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				
 				//check if fields were even entered
 				if (fields == -1) {
@@ -392,6 +400,7 @@ public class Window {
 						
 						//increment the progress bar
 						progressBar.setValue((int)(100*((double)1/(double)indeed.total_pages)));
+						progressBar.repaint();
 						
 						//decrement total pages left
 						pages--;
@@ -412,6 +421,7 @@ public class Window {
 							parse_idx++;
 							pages--;
 							progressBar.setValue((int)(100*((double)(indeed.total_pages-pages)/(double)indeed.total_pages)));
+							progressBar.repaint();
 						}
 						
 						//update table with collected data
@@ -445,7 +455,7 @@ public class Window {
 		
 		lblResults = new JLabel("Results: ");
 		lblResults.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblResults.setBounds(109, 273, 46, 14);
+		lblResults.setBounds(109, 273, 125, 14);
 		panel_settings.add(lblResults);
 		
 		progressBar = new JProgressBar();

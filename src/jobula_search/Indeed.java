@@ -3,7 +3,9 @@
  */
 package jobula_search;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -26,8 +28,11 @@ import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -98,6 +103,8 @@ public class Indeed {
 	private JProgressBar progress_s;
 	private JTable output_table_s;
 	
+	public String ip_url = "https://icanhazip.com";
+	
 	public Indeed(JTextField text_search, JComboBox<?> combo_source, JTextField text_city, JComboBox<?> combo_country, JComboBox<?> combo_type, JComboBox<?> combo_jobtype,
 			JSpinner spinner_age, JSpinner spinner_radius, JSpinner spinner_limit, JCheckBox chckbxCheckForEmail, JCheckBox chckbxCheckForPhone,
 			JLabel lblResults, JProgressBar progressBar, JTable job_table) {
@@ -118,7 +125,7 @@ public class Indeed {
 		this.output_table_s = job_table;
 	}
 	
-	public int collect_Data() {
+	public int collect_Data() throws MalformedURLException {
 //		query = !text_search.getText().isEmpty() ? text_search.getText() : "";
 //		location = !city_s.getText().isEmpty() ? city_s.getText() : "";
 		
@@ -128,9 +135,9 @@ public class Indeed {
 		radius = (int) radius_s.getValue();
 		sitetype = emptype_s.getSelectedItem().toString().trim().replaceAll("\\s+", "%20");
 		jobtype = jobtype_s.getSelectedItem().toString().trim().replaceAll("\\s+", "%20");
-//		limit = (int) limit_s.getValue();					//this limit is actually how many ads per page, leave set to 100
 		fromage = (int) age_s.getValue();
 		country = country_s.getSelectedItem().toString().trim().replaceAll("\\s+", "%20");
+		userip = get_IP();
 		
 		System.out.println("q: "+query+" l: "+location);
 		if(query == "ALL") {
@@ -190,12 +197,10 @@ public class Indeed {
 			if (node.getNodeName() == "totalresults") {
 				System.out.println(node.getFirstChild().getNodeValue());
 				//the 3 lines here grab the total results from the search, but thru experimentation, looks like 1000 is max
-//				resnum = Integer.parseInt(node.getFirstChild().getNodeValue());
-//				if(resnum >= 1000) {
-//					resnum = 999;
-//				}
-				
-				resnum = (int) limit_s.getValue();
+				resnum = Integer.parseInt(node.getFirstChild().getNodeValue());
+				if (resnum >= (int) limit_s.getValue()) {
+					resnum = (int) limit_s.getValue();
+				}
 				resultnumber_s.setText("Results: "+node.getFirstChild().getNodeValue());
 				if(resnum%25 != 0) {
 					this.total_pages = 1+resnum/25;
@@ -257,5 +262,28 @@ public class Indeed {
 	    List<T> list = new ArrayList<T>(Arrays.asList(a));
 	    list.removeAll(Collections.singleton(null));
 	    return list.toArray((T[]) Array.newInstance(a.getClass().getComponentType(), list.size()));
+	}
+	
+	public String get_IP() throws MalformedURLException {
+		URL myIP = new URL(ip_url);
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new InputStreamReader(myIP.openStream()));
+			String ip = in.readLine();
+			return ip;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public void table_Sorter(JTable table, TableModel model) {
+		table = new JTable(model);
+		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
+		table.setRowSorter(sorter);
+		
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>(25);
+		sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
 	}
 }
