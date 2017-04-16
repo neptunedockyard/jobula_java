@@ -389,6 +389,12 @@ public class Window {
 						//first round that gets all the information
 						Element elm = indeed.get_Post(first_url);
 						int pages = indeed.total_pages;
+						//check if pages are zero and exit if they are
+						if(pages == 0) {
+							TableModel empty = new DefaultTableModel(null, indeed.columns);
+							job_table.setModel(empty);
+							return;
+						}
 						System.out.println("Total pages: "+pages);
 	//					Object[][] all_parsed_data = indeed.parse_Element(elm);		//for single use
 						Object[][] parsed = new Object[pages][25];
