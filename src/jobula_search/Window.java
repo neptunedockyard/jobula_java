@@ -24,6 +24,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -31,6 +33,11 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import org.w3c.dom.Element;
@@ -42,11 +49,16 @@ import java.awt.Dimension;
 import javax.swing.UIManager;
 import java.awt.SystemColor;
 import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.JSplitPane;
 import javax.swing.JScrollPane;
 import java.awt.GridBagLayout;
@@ -61,6 +73,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
 
 public class Window {
 
@@ -276,8 +289,8 @@ public class Window {
 		text_city.setColumns(10);
 		
 		combo_country = new JComboBox();
-		combo_country.setModel(new DefaultComboBoxModel(new String[] {"Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua & Deps", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Rep", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Congo {Democratic Rep}", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland {Republic}", "Israel", "Italy", "Ivory Coast", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea North", "Korea South", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar, {Burma}", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russian Federation", "Rwanda", "St Kitts & Nevis", "St Lucia", "Saint Vincent & the Grenadines", "Samoa", "San Marino", "Sao Tome & Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad & Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"}));
-		combo_country.setSelectedIndex(30);
+		combo_country.setModel(new DefaultComboBoxModel(new String[] {"Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", "Antigua And Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia And Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory", "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central African Republic", "Chad", "Chile", "China", "Christmas Island", "Cocos (keeling) Islands", "Colombia", "Comoros", "Congo", "Congo", "Cook Islands", "Costa Rica", "Cote D'ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "France", "French Guiana", "French Polynesia", "French Southern Territories", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guinea", "Guinea-bissau", "Guyana", "Haiti", "Heard Island And Mcdonald Islands", "Holy See (Vatican City State)", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakstan", "Kenya", "Kiribati", "North Korea", "South Korea", "Kosovo", "Kuwait", "Kyrgyzstan", "Lao People's Democratic Republic", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libyan Arab Jamahiriya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Martinique", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montserrat", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau", "Palestinian Territory", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russian Federation", "Rwanda", "Saint Helena", "Saint Kitts And Nevis", "Saint Lucia", "Saint Pierre And Miquelon", "Saint Vincent And The Grenadines", "Samoa", "San Marino", "Sao Tome And Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia And The South Sandwich Islands", "Spain", "Sri Lanka", "Sudan", "Suriname", "Svalbard And Jan Mayen", "Swaziland", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tokelau", "Tonga", "Trinidad And Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks And Caicos Islands", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "United States Minor Outlying Islands", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Viet Nam", "Virgin Islands (British)", "Virgin Islands (US)", "Wallis And Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe"}));
+		combo_country.setSelectedIndex(37);
 		combo_country.setBounds(400, 36, 120, 20);
 		panel_settings.add(combo_country);
 		
@@ -433,6 +446,7 @@ public class Window {
 						//update table with collected data
 						TableModel model = new DefaultTableModel(all_parsed_data, indeed.columns);
 						job_table.setModel(model);
+						indeed.reset_table_shape(job_table);
 						
 						//set tab title to include jobs found
 						tabbedPane.setTitleAt(1, "Job List ("+indeed.resnum+")");
@@ -479,10 +493,10 @@ public class Window {
 		panel_search.add(scrollPane);
 		
 		job_table = new JTable();
+
 		job_table.setFillsViewportHeight(true);
 		scrollPane.setViewportView(job_table);
 		job_table.setForeground(new Color(0, 0, 0));
-		job_table.setCellSelectionEnabled(true);
 		job_table.setBackground(SystemColor.window);
 		job_table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		job_table.setModel(new DefaultTableModel(
@@ -492,10 +506,42 @@ public class Window {
 				"Title", "Company", "City", "Ad age", "Summary"
 			}
 		));
-		job_table.getColumnModel().getColumn(3).setPreferredWidth(80);
-		job_table.getColumnModel().getColumn(3).setMaxWidth(80);
-		job_table.getColumnModel().getColumn(4).setPreferredWidth(150);
+		job_table.getColumnModel().getColumn(0).setPreferredWidth(80);
+		job_table.getColumnModel().getColumn(0).setMinWidth(80);
+		
+		job_table.getColumnModel().getColumn(1).setPreferredWidth(80);
+		job_table.getColumnModel().getColumn(1).setMinWidth(80);
+		
+		job_table.getColumnModel().getColumn(2).setPreferredWidth(80);
+		job_table.getColumnModel().getColumn(2).setMinWidth(80);
+		
+		job_table.getColumnModel().getColumn(3).setPreferredWidth(60);
+		job_table.getColumnModel().getColumn(3).setMinWidth(40);
+		
+		job_table.getColumnModel().getColumn(4).setPreferredWidth(80);
+		job_table.getColumnModel().getColumn(4).setMinWidth(80);
+
 		job_table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		job_table.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		job_table.setAutoCreateRowSorter(true);
+		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>();
+		job_table.setRowSorter(sorter);
+		job_table.getTableHeader().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JTableHeader tableHeader = (JTableHeader) e.getSource();
+				int selectedColumn = tableHeader.columnAtPoint(e.getPoint());
+				System.out.println("col: "+selectedColumn);
+				
+//				TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>();
+//				job_table.setRowSorter(sorter);
+				sorter.setModel(job_table.getModel());
+				
+				if((selectedColumn != -1) && (selectedColumn == 3)) {
+					sorter.setComparator(selectedColumn, indeed.myComp);
+				}
+				sorter.sort();
+			}
+		});
 	}
 }
