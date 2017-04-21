@@ -504,8 +504,8 @@ public class Window {
 			},
 			new String[] {
 				"Title", "Company", "City", "Ad age", "Summary"
-			}
-		));
+			})
+		);
 		job_table.getColumnModel().getColumn(0).setPreferredWidth(80);
 		job_table.getColumnModel().getColumn(0).setMinWidth(80);
 		
@@ -524,24 +524,65 @@ public class Window {
 		job_table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		job_table.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		job_table.setAutoCreateRowSorter(true);
-		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>();
-		job_table.setRowSorter(sorter);
+		
 		job_table.getTableHeader().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JTableHeader tableHeader = (JTableHeader) e.getSource();
 				int selectedColumn = tableHeader.columnAtPoint(e.getPoint());
-				System.out.println("col: "+selectedColumn);
-				
-//				TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>();
+				TableRowSorter<TableModel> sorter = new TableRowSorter<>(job_table.getModel());
 //				job_table.setRowSorter(sorter);
-				sorter.setModel(job_table.getModel());
+				sorter.setComparator(3, new Comparator<Object>(){
+		
+					@Override
+					public int compare(Object arg0, Object arg1) {
+						String pattern = "minute|minutes|hour|stunden|Stunden|heur|時間|小时|小時|horas";
+						Pattern p = Pattern.compile(pattern);
+						String ar0 = (String)arg0;
+						String ar1 = (String)arg1;
+						Matcher m = p.matcher(ar0);
+						Matcher n = p.matcher(ar1);
+						String r = "[^0-9]";
+						
+						int x = Integer.parseInt(((String)arg0).split("[^0-9]")[0]);
+						int y = Integer.parseInt(((String)arg1).split("[^0-9]")[0]);
+						System.out.println("x: "+x+", y: "+y);
+						
+						if(m.find() && !n.find()) {
+							y = y * 100;
+						} else if (!m.find() && n.find()) {
+							x = x * 100;
+						}
+						int a = Integer.valueOf(x);
+						int b = Integer.valueOf(y);
+						System.out.println("x: "+x+", y: "+y);
+						return Integer.valueOf(x).compareTo(Integer.valueOf(y));
+					}
+					
+				});
 				
-				if((selectedColumn != -1) && (selectedColumn == 3)) {
-					sorter.setComparator(selectedColumn, indeed.myComp);
-				}
-				sorter.sort();
-			}
-		});
+				job_table.setRowSorter(sorter);
+			}});
+		
+//		job_table.getTableHeader().addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				JTableHeader tableHeader = (JTableHeader) e.getSource();
+//				int selectedColumn = tableHeader.columnAtPoint(e.getPoint());
+//				
+//				TableRowSorter<TableModel> sorter = new TableRowSorter<>(job_table.getModel());
+//				job_table.setRowSorter(sorter);
+//				sorter.setModel(job_table.getModel());
+//				
+//				System.out.println("col: "+selectedColumn);
+//				
+//				
+//				if((selectedColumn != -1) && (selectedColumn == 3)) {
+//					System.out.println("running maybe?");
+//					sorter.setComparator(selectedColumn, myComp);
+//				}
+//				
+//			}
+//		});
 	}
 }
