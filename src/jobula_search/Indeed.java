@@ -331,7 +331,7 @@ public class Indeed {
 	public int start_page;
 	private int end_page;
 	public int total_pages;
-	public Object[] columns = {"Title", "Company", "City", "Ad age", "Summary"};
+	public Object[] columns = {"Title", "Company", "City", "Ad age", "Summary", "URL"};
 	public int resnum;
 	
 	private JTextField text_search;
@@ -580,5 +580,8 @@ public class Indeed {
 		
 		table.getColumnModel().getColumn(4).setPreferredWidth(80);
 		table.getColumnModel().getColumn(4).setMinWidth(80);
+		
+		table.getColumnModel().getColumn(5).setPreferredWidth(80);
+		table.getColumnModel().getColumn(5).setMinWidth(80);
 	}
 }

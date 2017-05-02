@@ -44,6 +44,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 
 import javax.swing.UIManager;
@@ -64,6 +65,7 @@ import javax.swing.JScrollPane;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.GridLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -492,7 +494,34 @@ public class Window {
 		JScrollPane scrollPane = new JScrollPane();
 		panel_search.add(scrollPane);
 		
-		job_table = new JTable();
+		job_table = new JTable() {
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		job_table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				JTable table = (JTable) arg0.getSource();
+				Point p = arg0.getPoint();
+				int row = table.rowAtPoint(p);
+				if(arg0.getClickCount() == 2 && row != -1) {
+					String url = table.getModel().getValueAt(row, 5).toString();
+					System.out.println(url);
+					if(Desktop.isDesktopSupported()) {
+						try {
+							Desktop.getDesktop().browse(new URI(url));
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (URISyntaxException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		});
 
 		job_table.setFillsViewportHeight(true);
 		scrollPane.setViewportView(job_table);
@@ -503,9 +532,11 @@ public class Window {
 			new Object[][] {
 			},
 			new String[] {
-				"Title", "Company", "City", "Ad age", "Summary"
+				"Title", "Company", "City", "Ad age", "Summary", "URL"
 			})
 		);
+		TableModel model = job_table.getModel();
+		
 		job_table.getColumnModel().getColumn(0).setPreferredWidth(80);
 		job_table.getColumnModel().getColumn(0).setMinWidth(80);
 		
@@ -520,6 +551,9 @@ public class Window {
 		
 		job_table.getColumnModel().getColumn(4).setPreferredWidth(80);
 		job_table.getColumnModel().getColumn(4).setMinWidth(80);
+		
+		job_table.getColumnModel().getColumn(5).setPreferredWidth(80);
+		job_table.getColumnModel().getColumn(5).setMinWidth(80);
 
 		job_table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		job_table.setFont(new Font("Tahoma", Font.PLAIN, 11));
@@ -531,58 +565,10 @@ public class Window {
 				JTableHeader tableHeader = (JTableHeader) e.getSource();
 				int selectedColumn = tableHeader.columnAtPoint(e.getPoint());
 				TableRowSorter<TableModel> sorter = new TableRowSorter<>(job_table.getModel());
-//				job_table.setRowSorter(sorter);
-				sorter.setComparator(3, new Comparator<Object>(){
-		
-					@Override
-					public int compare(Object arg0, Object arg1) {
-						String pattern = "minute|minutes|hour|stunden|Stunden|heur|時間|小时|小時|horas";
-						Pattern p = Pattern.compile(pattern);
-						String ar0 = (String)arg0;
-						String ar1 = (String)arg1;
-						Matcher m = p.matcher(ar0);
-						Matcher n = p.matcher(ar1);
-						String r = "[^0-9]";
-						
-						int x = Integer.parseInt(((String)arg0).split("[^0-9]")[0]);
-						int y = Integer.parseInt(((String)arg1).split("[^0-9]")[0]);
-						System.out.println("x: "+x+", y: "+y);
-						
-						if(m.find() && !n.find()) {
-							y = y * 100;
-						} else if (!m.find() && n.find()) {
-							x = x * 100;
-						}
-						int a = Integer.valueOf(x);
-						int b = Integer.valueOf(y);
-						System.out.println("x: "+x+", y: "+y);
-						return Integer.valueOf(x).compareTo(Integer.valueOf(y));
-					}
-					
-				});
-				
 				job_table.setRowSorter(sorter);
+				sorter.setComparator(3, new Sorter());
+				job_table.setModel(sorter.getModel());
+				job_table.repaint();
 			}});
-		
-//		job_table.getTableHeader().addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				JTableHeader tableHeader = (JTableHeader) e.getSource();
-//				int selectedColumn = tableHeader.columnAtPoint(e.getPoint());
-//				
-//				TableRowSorter<TableModel> sorter = new TableRowSorter<>(job_table.getModel());
-//				job_table.setRowSorter(sorter);
-//				sorter.setModel(job_table.getModel());
-//				
-//				System.out.println("col: "+selectedColumn);
-//				
-//				
-//				if((selectedColumn != -1) && (selectedColumn == 3)) {
-//					System.out.println("running maybe?");
-//					sorter.setComparator(selectedColumn, myComp);
-//				}
-//				
-//			}
-//		});
 	}
 }
