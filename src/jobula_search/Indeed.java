@@ -537,34 +537,6 @@ public class Indeed {
 		sorter.sort();
 	}
 	
-//	Comparator<String> myComp = new java.util.Comparator<String>() {
-//		@Override
-//		public int compare(String arg0, String arg1) {
-//			// TODO Auto-generated method stub
-//			String pattern = "minute|minutes|hour|stunden|Stunden|heur|時間|小时|小時|horas";
-//			Pattern p = Pattern.compile(pattern);
-//			Matcher m = p.matcher(arg0);
-//			Matcher n = p.matcher(arg1);
-//			
-//			int x = Integer.parseInt(arg0.split("[^0-9]")[0]);
-//			int y = Integer.parseInt(arg1.split("[^0-9]")[0]);
-//			System.out.println("x: "+x+", y: "+y);
-//			
-//			if(m.find() && !n.find()) {
-//				System.out.println("first: "+x+", "+y+", "+(Integer.toString(x).compareTo(Integer.toString(y))) / Math.abs(Integer.toString(x).compareTo(Integer.toString(y))));
-////				return arg0.split("[^0-9]")[0].compareTo(arg1.split("[^0-9]")[0]);
-//				return Integer.toString(x).compareTo(Integer.toString(y));
-//			} else if (!m.find() && n.find()) {
-//				System.out.println("first: "+x+", "+y+", "+(Integer.toString(x).compareTo(Integer.toString(y))) / Math.abs(Integer.toString(x).compareTo(Integer.toString(y))));
-////				return arg1.split("[^0-9]")[0].compareTo(arg0.split("[^0-9]")[0]);
-//				return Integer.toString(y).compareTo(Integer.toString(x));
-//			} else {
-//				System.out.println("nope: "+x+", "+y+", "+Integer.toString(x).compareTo(Integer.toString(y)));
-//				return Integer.toString(x).compareTo(Integer.toString(y));
-//			}
-//		}
-//	};
-	
 	public void reset_table_shape(JTable table) {
 		table.getColumnModel().getColumn(0).setPreferredWidth(80);
 		table.getColumnModel().getColumn(0).setMinWidth(80);
