@@ -142,7 +142,7 @@ public class Window {
 		frmJobula.setBackground(SystemColor.control);
 		frmJobula.getContentPane().setBackground(SystemColor.control);
 		frmJobula.setTitle("Jobula - Job search tool v2.6.1");
-		frmJobula.setBounds(100, 100, 850, 400);
+		frmJobula.setBounds(100, 100, 850, 422);
 		frmJobula.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmJobula.setMinimumSize(new Dimension(850, 400));
 		frmJobula.getContentPane().setLayout(new BorderLayout(0, 0));
