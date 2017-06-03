@@ -170,8 +170,8 @@ public class Window {
 				//clear all the options typically entered by users
 				text_search.setText("");
 				text_city.setText("");
-				chckbxCheckForEmail.setEnabled(false);
-				chckbxCheckForPhone.setEnabled(false);
+				chckbxCheckForEmail.setSelected(false);
+				chckbxCheckForPhone.setSelected(false);
 			}
 		});
 		menuNew.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/File.gif")));
@@ -206,8 +206,8 @@ public class Window {
 						+ spinner_age.getValue().toString() + "\r\n"
 						+ spinner_radius.getValue().toString() + "\r\n"
 						+ spinner_limit.getValue().toString() + "\r\n"
-						+ chckbxCheckForEmail.isEnabled() + "\r\n"
-						+ chckbxCheckForPhone.isEnabled() + "\r\n";
+						+ chckbxCheckForEmail.isSelected() + "\r\n"
+						+ chckbxCheckForPhone.isSelected() + "\r\n";
 				//TODO get file dialog and save to file in the users AppData folder
 			}
 		});
