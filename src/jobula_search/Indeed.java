@@ -519,6 +519,7 @@ public class Indeed {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Could not connect to the Internet", "Connection Error", JOptionPane.WARNING_MESSAGE);
 		}
 		return null;
 	}

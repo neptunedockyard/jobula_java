@@ -163,11 +163,27 @@ public class Window {
 		menuBar.add(mnFile);
 		
 		JMenuItem menuNew = new JMenuItem("New");
+		menuNew.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				//clear all the options typically entered by users
+				text_search.setText("");
+				text_city.setText("");
+				chckbxCheckForEmail.setEnabled(false);
+				chckbxCheckForPhone.setEnabled(false);
+			}
+		});
 		menuNew.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/File.gif")));
 		menuNew.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/File.gif")));
 		mnFile.add(menuNew);
 		
 		JMenuItem menuOpen = new JMenuItem("Open");
+		menuOpen.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				//TODO add file dialog and handler here
+			}
+		});
 		menuOpen.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Directory.gif")));
 		menuOpen.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Directory.gif")));
 		mnFile.add(menuOpen);
@@ -176,11 +192,35 @@ public class Window {
 		mnFile.add(separator);
 		
 		JMenuItem menuSave = new JMenuItem("Save Search As");
+		menuSave.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				String saveFormat = null;
+				saveFormat += text_search + "\r\n"
+						+ text_city + "\r\n"
+						+ combo_source.getSelectedItem() + "\r\n"
+						+ combo_country.getSelectedItem() + "\r\n"
+						+ combo_type.getSelectedItem() + "\r\n"
+						+ combo_jobtype.getSelectedItem() + "\r\n"
+						+ spinner_age.getValue().toString() + "\r\n"
+						+ spinner_radius.getValue().toString() + "\r\n"
+						+ spinner_limit.getValue().toString() + "\r\n"
+						+ chckbxCheckForEmail.isEnabled() + "\r\n"
+						+ chckbxCheckForPhone.isEnabled() + "\r\n";
+				//TODO get file dialog and save to file in the users AppData folder
+			}
+		});
 		menuSave.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/FloppyDrive.gif")));
 		menuSave.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/FloppyDrive.gif")));
 		mnFile.add(menuSave);
 		
 		JMenuItem menuExport = new JMenuItem("Export as CSV");
+		menuExport.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				//TODO add file dialog and handler here to export either what's been selected in the job table or the entire thing, not sure yet
+			}
+		});
 		menuExport.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/HardDrive.gif")));
 		menuExport.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/HardDrive.gif")));
 		mnFile.add(menuExport);
@@ -204,11 +244,24 @@ public class Window {
 		menuBar.add(mnEdit);
 		
 		JMenuItem menuCopy = new JMenuItem("Copy");
+		menuCopy.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				int[] selectedRows = job_table.getSelectedRows();
+				//TODO copy them to system clipboard
+			}
+		});
 		menuCopy.setIcon(new ImageIcon(Window.class.getResource("/com/sun/javafx/scene/web/skin/Copy_16x16_JFX.png")));
 		menuCopy.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/javafx/scene/web/skin/Copy_16x16_JFX.png")));
 		mnEdit.add(menuCopy);
 		
 		JMenuItem menuSelect = new JMenuItem("Select All");
+		menuSelect.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				job_table.selectAll();
+			}
+		});
 		menuSelect.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/DetailsView.gif")));
 		menuSelect.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/DetailsView.gif")));
 		mnEdit.add(menuSelect);
@@ -229,7 +282,7 @@ public class Window {
 						+ "To expand an ad, double click it to open in a browser.", "How to use this tool", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
-		menuHow.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Inform.gif")));
+		menuHow.setIcon(null);
 		menuHow.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Inform.gif")));
 		mnHelp.add(menuHow);
 		
@@ -240,7 +293,7 @@ public class Window {
 				JOptionPane.showMessageDialog(null, "Jobula Search Tool\r\nVersion 2.6.1\r\nAuthor: neptuneDockyard", "About", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
-		menuAbout.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Question.gif")));
+		menuAbout.setIcon(null);
 		menuAbout.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Question.gif")));
 		mnHelp.add(menuAbout);
 		
