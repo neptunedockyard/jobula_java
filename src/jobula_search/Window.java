@@ -145,7 +145,7 @@ public class Window {
 		frmJobula.setTitle("Jobula - Job search tool v2.6.1");
 		frmJobula.setBounds(100, 100, 850, 422);
 		frmJobula.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frmJobula.setMinimumSize(new Dimension(850, 400));
+		frmJobula.setMinimumSize(new Dimension(850, 425));
 		frmJobula.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JToolBar toolBar = new JToolBar();
