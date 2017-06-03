@@ -19,7 +19,7 @@ public class Sorter implements Comparator<Object> {
 		
 		int x = Integer.parseInt(((String)arg0).split("[^0-9]")[0]);
 		int y = Integer.parseInt(((String)arg1).split("[^0-9]")[0]);
-//		System.out.println("x: "+x+", y: "+y);
+		System.out.println("x: "+x+", y: "+y);
 		int a = Integer.valueOf(x);
 		int b = Integer.valueOf(y);		
 		if(m.find() && !n.find()) {

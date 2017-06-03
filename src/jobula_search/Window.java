@@ -623,6 +623,12 @@ public class Window {
 				TableRowSorter<TableModel> sorter = new TableRowSorter<>(job_table.getModel());
 				job_table.setRowSorter(sorter);
 				sorter.setComparator(3, new Sorter());
+				
+				//update table with collected data
+//				TableModel model = sorter.getModel();
+//				job_table.setModel(model);
+//				indeed.reset_table_shape(job_table);
+				
 				job_table.setModel(sorter.getModel());
 				job_table.repaint();
 			}});
