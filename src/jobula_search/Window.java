@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.rmi.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -438,7 +439,9 @@ public class Window {
 				} catch (MalformedURLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+					return;
 				}
+				//TODO add another exception here that catches when the host is unreachable, otherwise it continues to try and parse data
 				
 				//check if fields were even entered
 				if (fields == -1) {

@@ -384,16 +384,18 @@ public class Indeed {
 		fromage = (int) age_s.getValue();
 //		country = country_s.getSelectedItem().toString().trim().replaceAll("\\s+", "%20");
 		country = countries[country_s.getSelectedIndex()][0].toString().trim();
-		userip = get_IP();
+//		userip = get_IP();
 		
 		System.out.println("q: "+query+" l: "+location);
 		if(query == "ALL") {
 			query = "";
+			userip = get_IP();
 			return 0;
 		}
 		if(query.trim().isEmpty() || location.trim().isEmpty() ) {
 			return -1;
 		} else {
+			userip = get_IP();
 			return 0;
 		}
 	}
