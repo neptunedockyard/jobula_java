@@ -138,6 +138,7 @@ public class Window {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings("serial")
 	private void initialize() {
 		frmJobula = new JFrame();
 		frmJobula.setBackground(SystemColor.control);
@@ -252,8 +253,8 @@ public class Window {
 				//TODO copy them to system clipboard
 			}
 		});
-		menuCopy.setIcon(new ImageIcon(Window.class.getResource("/com/sun/javafx/scene/web/skin/Copy_16x16_JFX.png")));
-		menuCopy.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/javafx/scene/web/skin/Copy_16x16_JFX.png")));
+		menuCopy.setIcon(null);
+		menuCopy.setSelectedIcon(null);
 		mnEdit.add(menuCopy);
 		
 		JMenuItem menuSelect = new JMenuItem("Select All");
@@ -589,9 +590,10 @@ public class Window {
 			},
 			new String[] {
 				"Title", "Company", "City", "Ad age", "Summary", "URL"
-			})
+			}) {
+			Class[] types = {String.class, String.class, String.class, Object.class, String.class, String.class};
+		}
 		);
-		TableModel model = job_table.getModel();
 		
 		job_table.getColumnModel().getColumn(0).setPreferredWidth(80);
 		job_table.getColumnModel().getColumn(0).setMinWidth(80);
@@ -614,23 +616,14 @@ public class Window {
 		job_table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		job_table.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		job_table.setAutoCreateRowSorter(true);
-		
+
 		job_table.getTableHeader().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				JTableHeader tableHeader = (JTableHeader) e.getSource();
-				int selectedColumn = tableHeader.columnAtPoint(e.getPoint());
-				TableRowSorter<TableModel> sorter = new TableRowSorter<>(job_table.getModel());
-				job_table.setRowSorter(sorter);
-				sorter.setComparator(3, new Sorter());
-				
-				//update table with collected data
-//				TableModel model = sorter.getModel();
-//				job_table.setModel(model);
-//				indeed.reset_table_shape(job_table);
-				
-				job_table.setModel(sorter.getModel());
-				job_table.repaint();
-			}});
+				TableRowSorter<DefaultTableModel> rowSorter = (TableRowSorter<DefaultTableModel>)job_table.getRowSorter();
+				rowSorter.setComparator(3, new Sorter());
+				rowSorter.sort();
+			}
+		});
 	}
 }
