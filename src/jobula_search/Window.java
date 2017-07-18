@@ -77,6 +77,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+import java.awt.datatransfer.*;
+import java.awt.Toolkit;
+
+import com.opencsv.*;
+import java.io.FileWriter;
+
 
 public class Window {
 
@@ -221,6 +227,33 @@ public class Window {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				//TODO add file dialog and handler here to export either what's been selected in the job table or the entire thing, not sure yet
+				CSVWriter writer = null;
+				try {
+					writer = new CSVWriter(new FileWriter("something.csv"));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				int[] selectedRows = job_table.getSelectedRows();
+				String[] lineBuffer = new String[selectedRows.length+1];
+				List<String[]> exportBuffer = new ArrayList<String[]>();
+				for(int row_index = 0; row_index <= selectedRows.length-1; row_index++) {
+					for(int col_index = 0; col_index <= job_table.getColumnCount()-1; col_index++) {
+						lineBuffer[col_index] = job_table.getValueAt(selectedRows[row_index], col_index).toString();
+					}
+					exportBuffer.add(lineBuffer);
+				}
+				//TODO: currently not working, there's a problem with the writer, it seems to be writing the same line
+				//over and over again or not at all.
+				writer.writeAll(exportBuffer);
+				
+				try {
+					writer.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		menuExport.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/HardDrive.gif")));
@@ -250,7 +283,18 @@ public class Window {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				int[] selectedRows = job_table.getSelectedRows();
+				StringBuffer selectedBuffer = new StringBuffer();
+				for(int row_index = 0; row_index <= selectedRows.length-1; row_index++) {
+					for(int col_index = 0; col_index <= job_table.getColumnCount()-1; col_index++) {
+						selectedBuffer.append(job_table.getValueAt(row_index, col_index));
+						if(col_index < job_table.getColumnCount()-1)
+							selectedBuffer.append(";");
+					}
+					selectedBuffer.append("\n");
+				}
 				//TODO copy them to system clipboard
+				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+				clipboard.setContents(new StringSelection(selectedBuffer.toString()), null);
 			}
 		});
 		menuCopy.setIcon(null);
@@ -346,8 +390,8 @@ public class Window {
 		text_city.setColumns(10);
 		
 		combo_country = new JComboBox();
-		combo_country.setModel(new DefaultComboBoxModel(new String[] {"Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", "Antigua And Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia And Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory", "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central African Republic", "Chad", "Chile", "China", "Christmas Island", "Cocos (keeling) Islands", "Colombia", "Comoros", "Congo", "Congo", "Cook Islands", "Costa Rica", "Cote D'ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "France", "French Guiana", "French Polynesia", "French Southern Territories", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guinea", "Guinea-bissau", "Guyana", "Haiti", "Heard Island And Mcdonald Islands", "Holy See (Vatican City State)", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakstan", "Kenya", "Kiribati", "North Korea", "South Korea", "Kosovo", "Kuwait", "Kyrgyzstan", "Lao People's Democratic Republic", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libyan Arab Jamahiriya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Martinique", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montserrat", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau", "Palestinian Territory", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russian Federation", "Rwanda", "Saint Helena", "Saint Kitts And Nevis", "Saint Lucia", "Saint Pierre And Miquelon", "Saint Vincent And The Grenadines", "Samoa", "San Marino", "Sao Tome And Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia And The South Sandwich Islands", "Spain", "Sri Lanka", "Sudan", "Suriname", "Svalbard And Jan Mayen", "Swaziland", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tokelau", "Tonga", "Trinidad And Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks And Caicos Islands", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "United States Minor Outlying Islands", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Viet Nam", "Virgin Islands (British)", "Virgin Islands (US)", "Wallis And Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe"}));
-		combo_country.setSelectedIndex(37);
+		combo_country.setModel(new DefaultComboBoxModel(new String[] {"Antarctica", "Argentina", "Australia", "Austria", "Bahrain", "Belgium", "Brazil", "Canada", "Chile", "China", "Colombia", "Costa Rica", "Czech Republic", "Denmark", "Ecuador", "Egypt", "Finland", "France", "Germany", "Greece", "Hong Kong", "Hungary", "India", "Indonesia", "Ireland", "Israel", "Italy", "Japan", "Kuwait", "Luxembourg", "Malaysia", "Mexico", "Morocco", "Netherlands", "New Zealand", "Nigeria", "Norway", "Oman", "Pakistan", "Panama", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Saudi Arabia", "Singapore", "South Africa", "South Korea", "Spain", "Sweden", "Switzerland", "Taiwan", "Thailand", "Turkey", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Venezuela", "Vietnam"}));
+		combo_country.setSelectedIndex(7);
 		combo_country.setBounds(400, 36, 120, 20);
 		panel_settings.add(combo_country);
 		
@@ -408,7 +452,7 @@ public class Window {
 		
 		spinner_limit = new JSpinner();
 		spinner_limit.setToolTipText("the number of ads shown");
-		spinner_limit.setModel(new SpinnerNumberModel(100, 1, 1000, 10));
+		spinner_limit.setModel(new SpinnerNumberModel(100, 25, 1000, 5));
 		spinner_limit.setBounds(10, 148, 120, 20);
 		panel_settings.add(spinner_limit);
 		
