@@ -13,6 +13,8 @@ import javax.swing.border.BevelBorder;
 import java.awt.Font;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.MatteBorder;
+import javax.swing.filechooser.FileFilter;
+
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -218,9 +220,25 @@ public class Window {
 						+ spinner_limit.getValue().toString() + "\r\n"
 						+ chckbxCheckForEmail.isSelected() + "\r\n"
 						+ chckbxCheckForPhone.isSelected() + "\r\n";
-				//TODO get file dialog and save to file in the users AppData folder
+				//TODO saving works, but need to override the file already exists dialog and ask user to overwrite
 				JFileChooser fc = new JFileChooser();
 				fc.setCurrentDirectory(new File("./"));
+				fc.setFileFilter(new FileFilter() {
+					
+					public String getDescription() {
+						return "Text files (*.txt)";
+					}
+
+					@Override
+					public boolean accept(File arg0) {
+						if(arg0.isDirectory()) {
+							return true;
+						} else {
+							String filename = arg0.getName().toLowerCase();
+							return filename.endsWith(".txt");
+						}
+					}
+				});
 				fc.showSaveDialog(null);
 				
 				FileWriter writer = null;
@@ -245,6 +263,22 @@ public class Window {
 				//TODO add file dialog and handler here to export either what's been selected in the job table or the entire thing, not sure yet
 				JFileChooser fc = new JFileChooser();
 				fc.setCurrentDirectory(new File("./"));
+				fc.setFileFilter(new FileFilter() {
+					
+					public String getDescription() {
+						return "CSV (*.csv)";
+					}
+
+					@Override
+					public boolean accept(File arg0) {
+						if(arg0.isDirectory()) {
+							return true;
+						} else {
+							String filename = arg0.getName().toLowerCase();
+							return filename.endsWith(".csv");
+						}
+					}
+				});
 				fc.showSaveDialog(null);
 				
 				CSVWriter writer = null;
@@ -265,7 +299,7 @@ public class Window {
 							job_table.getValueAt(row_index, 2).toString(),
 							job_table.getValueAt(row_index, 3).toString(),
 							job_table.getValueAt(row_index, 4).toString(),
-							job_table.getValueAt(row_index, 5).toString()
+							"=HYPERLINK(\""+job_table.getValueAt(row_index, 5).toString()+"\")"
 					});
 				}
 				writer.writeAll(exportBuffer);
