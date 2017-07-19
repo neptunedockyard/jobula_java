@@ -206,9 +206,9 @@ public class Window {
 		menuSave.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				String saveFormat = null;
-				saveFormat += text_search + "\r\n"
-						+ text_city + "\r\n"
+				String saveFormat = "";
+				saveFormat += text_search.getText() + "\r\n"
+						+ text_city.getText() + "\r\n"
 						+ combo_source.getSelectedItem() + "\r\n"
 						+ combo_country.getSelectedItem() + "\r\n"
 						+ combo_type.getSelectedItem() + "\r\n"
@@ -219,6 +219,19 @@ public class Window {
 						+ chckbxCheckForEmail.isSelected() + "\r\n"
 						+ chckbxCheckForPhone.isSelected() + "\r\n";
 				//TODO get file dialog and save to file in the users AppData folder
+				JFileChooser fc = new JFileChooser();
+				fc.setCurrentDirectory(new File("./"));
+				fc.showSaveDialog(null);
+				
+				FileWriter writer = null;
+				try {
+					writer = new FileWriter(fc.getSelectedFile()+".txt");
+					writer.write(saveFormat);
+					writer.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		menuSave.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/FloppyDrive.gif")));
@@ -236,7 +249,7 @@ public class Window {
 				
 				CSVWriter writer = null;
 				try {
-					writer = new CSVWriter(new FileWriter(fc.getSelectedFile()));
+					writer = new CSVWriter(new FileWriter(fc.getSelectedFile()+".csv"));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
