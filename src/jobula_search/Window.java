@@ -17,6 +17,7 @@ import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JSpinner;
 import javax.swing.JCheckBox;
 import javax.swing.SpinnerNumberModel;
@@ -81,6 +82,8 @@ import java.awt.datatransfer.*;
 import java.awt.Toolkit;
 
 import com.opencsv.*;
+
+import java.io.File;
 import java.io.FileWriter;
 
 
@@ -227,25 +230,31 @@ public class Window {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				//TODO add file dialog and handler here to export either what's been selected in the job table or the entire thing, not sure yet
+				JFileChooser fc = new JFileChooser();
+				fc.setCurrentDirectory(new File("./"));
+				fc.showSaveDialog(null);
+				
 				CSVWriter writer = null;
 				try {
-					writer = new CSVWriter(new FileWriter("something.csv"));
+					writer = new CSVWriter(new FileWriter(fc.getSelectedFile()));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
 				int[] selectedRows = job_table.getSelectedRows();
-				String[] lineBuffer = new String[selectedRows.length+1];
 				List<String[]> exportBuffer = new ArrayList<String[]>();
+				
 				for(int row_index = 0; row_index <= selectedRows.length-1; row_index++) {
-					for(int col_index = 0; col_index <= job_table.getColumnCount()-1; col_index++) {
-						lineBuffer[col_index] = job_table.getValueAt(selectedRows[row_index], col_index).toString();
-					}
-					exportBuffer.add(lineBuffer);
+					exportBuffer.add(new String[]{ 
+							job_table.getValueAt(row_index, 0).toString(), 
+							job_table.getValueAt(row_index, 1).toString(),
+							job_table.getValueAt(row_index, 2).toString(),
+							job_table.getValueAt(row_index, 3).toString(),
+							job_table.getValueAt(row_index, 4).toString(),
+							job_table.getValueAt(row_index, 5).toString()
+					});
 				}
-				//TODO: currently not working, there's a problem with the writer, it seems to be writing the same line
-				//over and over again or not at all.
 				writer.writeAll(exportBuffer);
 				
 				try {
