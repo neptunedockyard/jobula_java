@@ -85,7 +85,10 @@ import java.awt.Toolkit;
 
 import com.opencsv.*;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 
 
@@ -195,6 +198,50 @@ public class Window {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				//TODO add file dialog and handler here
+				JFileChooser fc = new JFileChooser();
+				File loadedFile = null;
+				fc.setCurrentDirectory(new File("./"));
+				if(fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+					loadedFile = fc.getSelectedFile();
+					try {
+						BufferedReader br = new BufferedReader(new FileReader(loadedFile));
+						List<String> data = new ArrayList<String>();
+						int index = 0;
+						while(index < 11) {
+							data.add(br.readLine());
+							if(data.get(index) == null)
+								break;
+							index++;
+						}
+						if(index != 11) {
+//							System.out.println("bad save file");
+							JOptionPane.showMessageDialog(null, "Save file corrupted.", "Bad save file", JOptionPane.ERROR_MESSAGE);
+							br.close();
+							return;
+						} else {
+							text_search.setText(data.get(0));
+							text_city.setText(data.get(1));
+							combo_source.setSelectedItem(data.get(2));
+							combo_country.setSelectedItem(data.get(3));
+							combo_type.setSelectedItem(data.get(4));
+							combo_jobtype.setSelectedItem(data.get(5));
+							spinner_age.setValue(Integer.valueOf(data.get(6)));
+							spinner_radius.setValue(Integer.valueOf(data.get(7)));
+							spinner_limit.setValue(Integer.valueOf(data.get(8)));
+							chckbxCheckForEmail.setSelected(Boolean.getBoolean(data.get(9)));
+							chckbxCheckForPhone.setSelected(Boolean.getBoolean(data.get(10)));
+						}
+						br.close();
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+				
 			}
 		});
 		menuOpen.setIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Directory.gif")));
@@ -239,16 +286,16 @@ public class Window {
 						}
 					}
 				});
-				fc.showSaveDialog(null);
-				
-				FileWriter writer = null;
-				try {
-					writer = new FileWriter(fc.getSelectedFile()+".txt");
-					writer.write(saveFormat);
-					writer.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if(fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+					FileWriter writer = null;
+						try {
+							writer = new FileWriter(fc.getSelectedFile()+".txt");
+							writer.write(saveFormat);
+							writer.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 				}
 			}
 		});
@@ -279,36 +326,37 @@ public class Window {
 						}
 					}
 				});
-				fc.showSaveDialog(null);
+//				fc.showSaveDialog(null);
+				if(fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+					CSVWriter writer = null;
+					try {
+						writer = new CSVWriter(new FileWriter(fc.getSelectedFile()+".csv"));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				
-				CSVWriter writer = null;
-				try {
-					writer = new CSVWriter(new FileWriter(fc.getSelectedFile()+".csv"));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				int[] selectedRows = job_table.getSelectedRows();
-				List<String[]> exportBuffer = new ArrayList<String[]>();
-				
-				for(int row_index = 0; row_index <= selectedRows.length-1; row_index++) {
-					exportBuffer.add(new String[]{ 
-							job_table.getValueAt(row_index, 0).toString(), 
-							job_table.getValueAt(row_index, 1).toString(),
-							job_table.getValueAt(row_index, 2).toString(),
-							job_table.getValueAt(row_index, 3).toString(),
-							job_table.getValueAt(row_index, 4).toString(),
-							"=HYPERLINK(\""+job_table.getValueAt(row_index, 5).toString()+"\")"
-					});
-				}
-				writer.writeAll(exportBuffer);
-				
-				try {
-					writer.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					int[] selectedRows = job_table.getSelectedRows();
+					List<String[]> exportBuffer = new ArrayList<String[]>();
+					
+					for(int row_index = 0; row_index <= selectedRows.length-1; row_index++) {
+						exportBuffer.add(new String[]{ 
+								job_table.getValueAt(row_index, 0).toString(), 
+								job_table.getValueAt(row_index, 1).toString(),
+								job_table.getValueAt(row_index, 2).toString(),
+								job_table.getValueAt(row_index, 3).toString(),
+								job_table.getValueAt(row_index, 4).toString(),
+								"=HYPERLINK(\""+job_table.getValueAt(row_index, 5).toString()+"\")"
+						});
+					}
+					writer.writeAll(exportBuffer);
+					
+					try {
+						writer.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		});
@@ -525,7 +573,7 @@ public class Window {
 		btnSearch = new JButton("Search");
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("test");
+//				System.out.println("test");
 				//first have to reset start page and progress since last click
 				indeed.start_page = 0;
 				progressBar.setValue(0);
@@ -567,7 +615,7 @@ public class Window {
 							job_table.setModel(empty);
 							return;
 						}
-						System.out.println("Total pages: "+pages);
+//						System.out.println("Total pages: "+pages);
 	//					Object[][] all_parsed_data = indeed.parse_Element(elm);		//for single use
 						Object[][] parsed = new Object[pages][25];
 						parsed[0] = indeed.parse_Element(elm);
@@ -586,15 +634,15 @@ public class Window {
 						//subsequent rounds to fill table
 						int parse_idx = 1;
 						while(pages > 0) {
-							System.out.println("total pages left: "+indeed.total_pages+", "+pages);
+//							System.out.println("total pages left: "+indeed.total_pages+", "+pages);
 							parsed[parse_idx] = indeed.parse_Element(indeed.get_Post(indeed.Generate_Link()));
-							System.out.println(parse_idx);
-							System.out.println(parsed[parse_idx-1].length);
-							System.out.println(parsed[parse_idx].length);
-							System.out.println(all_parsed_data.length);
-							if(parse_idx == 3) {
-								System.out.println("wait here");
-							}
+//							System.out.println(parse_idx);
+//							System.out.println(parsed[parse_idx-1].length);
+//							System.out.println(parsed[parse_idx].length);
+//							System.out.println(all_parsed_data.length);
+//							if(parse_idx == 3) {
+//								System.out.println("wait here");
+//							}
 							System.arraycopy(parsed[parse_idx], 0, all_parsed_data, parse_idx*parsed[parse_idx-1].length, parsed[parse_idx].length);
 							parse_idx++;
 							pages--;
@@ -664,7 +712,7 @@ public class Window {
 				int row = table.rowAtPoint(p);
 				if(arg0.getClickCount() == 2 && row != -1) {
 					String url = table.getModel().getValueAt(row, 5).toString();
-					System.out.println(url);
+//					System.out.println(url);
 					if(Desktop.isDesktopSupported()) {
 						try {
 							Desktop.getDesktop().browse(new URI(url));

@@ -209,7 +209,7 @@ public class Indeed {
 		country = countries[country_s.getSelectedIndex()][0].toString().trim();
 //		userip = get_IP();
 		
-		System.out.println("q: "+query+" l: "+location);
+//		System.out.println("q: "+query+" l: "+location);
 		if(query == "ALL") {
 			query = "";
 			userip = get_IP();
@@ -247,7 +247,7 @@ public class Indeed {
 				"&userip="+userip+
 				"&useragent="+userAgent+
 				"&v="+version;
-		System.out.println(link);
+//		System.out.println(link);
 		return link;
 	}
 	
@@ -265,9 +265,9 @@ public class Indeed {
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 
-			System.out.println(node.getNodeName());
+//			System.out.println(node.getNodeName());
 			if (node.getNodeName() == "totalresults") {
-				System.out.println(node.getFirstChild().getNodeValue());
+//				System.out.println(node.getFirstChild().getNodeValue());
 				//the 3 lines here grab the total results from the search, but thru experimentation, looks like 1000 is max
 				resnum = Integer.parseInt(node.getFirstChild().getNodeValue());
 				if (resnum >= (int) limit_s.getValue()) {
@@ -280,10 +280,10 @@ public class Indeed {
 					this.total_pages = resnum/25;
 				}
 			} else if (node.getNodeName() == "start") {
-				System.out.println("start page: "+node.getFirstChild().getNodeValue());
+//				System.out.println("start page: "+node.getFirstChild().getNodeValue());
 //				this.start_page = Integer.parseInt(node.getFirstChild().getNodeValue());
 			} else if (node.getNodeName() == "end") {
-				System.out.println("end page: "+node.getFirstChild().getNodeValue());
+//				System.out.println("end page: "+node.getFirstChild().getNodeValue());
 //				this.end_page = Integer.parseInt(node.getFirstChild().getNodeValue());
 				//define new start page to be used for the next round
 				this.start_page = Integer.parseInt(node.getFirstChild().getNodeValue());
@@ -300,7 +300,7 @@ public class Indeed {
 //		Object[][] parsed_data = new Object[Integer.parseInt(this.resultnumber_s.getText())][6];
 		Object[][] parsed_data = new Object[length][6];
 		
-		System.out.println("length: " + length);
+//		System.out.println("length: " + length);
 		if(subNodeList != null) {
 			for (int index = 0; index < length; index++) {
 				if(subNodeList.item(index).getNodeType() == Node.ELEMENT_NODE) {
