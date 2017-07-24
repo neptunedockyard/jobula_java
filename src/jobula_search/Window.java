@@ -562,12 +562,12 @@ public class Window {
 		
 		chckbxCheckForEmail = new JCheckBox("Check for email");
 		chckbxCheckForEmail.setToolTipText("scan postings for email addresses for direct contact");
-		chckbxCheckForEmail.setBounds(10, 175, 120, 23);
+		chckbxCheckForEmail.setBounds(10, 175, 176, 23);
 		panel_settings.add(chckbxCheckForEmail);
 		
 		chckbxCheckForPhone = new JCheckBox("Check for phone number");
 		chckbxCheckForPhone.setToolTipText("scan postings for phone numbers for direct contact, experimental!");
-		chckbxCheckForPhone.setBounds(10, 201, 176, 23);
+		chckbxCheckForPhone.setBounds(10, 201, 224, 23);
 		panel_settings.add(chckbxCheckForPhone);
 		
 		btnSearch = new JButton("Search");
@@ -653,6 +653,11 @@ public class Window {
 						//update table with collected data
 						TableModel model = new DefaultTableModel(all_parsed_data, indeed.columns);
 						job_table.setModel(model);
+						
+						//check for phones/emails here and update the table model with renderer
+						indeed.highlight_email(job_table);
+						indeed.highlight_phone(job_table);
+						
 						indeed.reset_table_shape(job_table);
 						
 						//set tab title to include jobs found
