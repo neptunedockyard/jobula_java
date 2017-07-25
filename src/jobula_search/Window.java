@@ -341,12 +341,12 @@ public class Window {
 					
 					for(int row_index = 0; row_index <= selectedRows.length-1; row_index++) {
 						exportBuffer.add(new String[]{ 
-								job_table.getValueAt(row_index, 0).toString(), 
-								job_table.getValueAt(row_index, 1).toString(),
-								job_table.getValueAt(row_index, 2).toString(),
-								job_table.getValueAt(row_index, 3).toString(),
-								job_table.getValueAt(row_index, 4).toString(),
-								"=HYPERLINK(\""+job_table.getValueAt(row_index, 5).toString()+"\")"
+								job_table.getValueAt(job_table.convertRowIndexToModel(row_index), 0).toString(), 
+								job_table.getValueAt(job_table.convertRowIndexToModel(row_index), 1).toString(),
+								job_table.getValueAt(job_table.convertRowIndexToModel(row_index), 2).toString(),
+								job_table.getValueAt(job_table.convertRowIndexToModel(row_index), 3).toString(),
+								job_table.getValueAt(job_table.convertRowIndexToModel(row_index), 4).toString(),
+								"=HYPERLINK(\""+job_table.getValueAt(job_table.convertRowIndexToModel(row_index), 5).toString()+"\")"
 						});
 					}
 					writer.writeAll(exportBuffer);
@@ -390,7 +390,7 @@ public class Window {
 				StringBuffer selectedBuffer = new StringBuffer();
 				for(int row_index = 0; row_index <= selectedRows.length-1; row_index++) {
 					for(int col_index = 0; col_index <= job_table.getColumnCount()-1; col_index++) {
-						selectedBuffer.append(job_table.getValueAt(row_index, col_index));
+						selectedBuffer.append(job_table.getValueAt(job_table.convertRowIndexToModel(row_index), col_index));
 						if(col_index < job_table.getColumnCount()-1)
 							selectedBuffer.append(";");
 					}
@@ -716,7 +716,7 @@ public class Window {
 				Point p = arg0.getPoint();
 				int row = table.rowAtPoint(p);
 				if(arg0.getClickCount() == 2 && row != -1) {
-					String url = table.getModel().getValueAt(row, 5).toString();
+					String url = table.getModel().getValueAt(table.convertRowIndexToModel(row), 5).toString();
 //					System.out.println(url);
 					if(Desktop.isDesktopSupported()) {
 						try {
