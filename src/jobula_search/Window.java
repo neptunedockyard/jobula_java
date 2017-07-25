@@ -411,8 +411,7 @@ public class Window {
 						+ "To expand an ad, double click it to open in a browser.", "How to use this tool", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
-		menuHow.setIcon(null);
-		menuHow.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Inform.gif")));
+		menuHow.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/javafx/scene/control/skin/caspian/dialog-confirm.png")));
 		mnHelp.add(menuHow);
 		
 		JMenuItem menuAbout = new JMenuItem("About...");
@@ -422,8 +421,7 @@ public class Window {
 				JOptionPane.showMessageDialog(null, "Jobula Search Tool\r\nVersion 2.6.1\r\nAuthor: neptuneDockyard", "About", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
-		menuAbout.setIcon(null);
-		menuAbout.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/java/swing/plaf/windows/icons/Question.gif")));
+		menuAbout.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/javafx/scene/control/skin/caspian/dialog-information.png")));
 		mnHelp.add(menuAbout);
 		
 		JPanel panel = new JPanel();
