@@ -133,6 +133,7 @@ public class Window {
 	@SuppressWarnings("serial")
 	private void initialize() {
 		frmJobula = new JFrame();
+		frmJobula.setIconImage(Toolkit.getDefaultToolkit().getImage(Window.class.getResource("/jobula_search/icons/jobula_logo_semi.png")));
 		frmJobula.setBackground(SystemColor.control);
 		frmJobula.getContentPane().setBackground(SystemColor.control);
 		frmJobula.setTitle("Jobula - Job search tool v2.6.1");
@@ -456,22 +457,26 @@ public class Window {
 		panel_settings.add(lblCity);
 		
 		text_search = new JTextField();
+		text_search.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		text_search.setBounds(10, 36, 120, 20);
 		panel_settings.add(text_search);
 		text_search.setColumns(10);
 		
 		combo_source = new JComboBox();
+		combo_source.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		combo_source.setToolTipText("which job search source website?");
 		combo_source.setModel(new DefaultComboBoxModel(new String[] {"Indeed"}));
 		combo_source.setBounds(140, 36, 120, 20);
 		panel_settings.add(combo_source);
 		
 		text_city = new JTextField();
+		text_city.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		text_city.setBounds(270, 36, 120, 20);
 		panel_settings.add(text_city);
 		text_city.setColumns(10);
 		
 		combo_country = new JComboBox();
+		combo_country.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		combo_country.setModel(new DefaultComboBoxModel(new String[] {"Antarctica", "Argentina", "Australia", "Austria", "Bahrain", "Belgium", "Brazil", "Canada", "Chile", "China", "Colombia", "Costa Rica", "Czech Republic", "Denmark", "Ecuador", "Egypt", "Finland", "France", "Germany", "Greece", "Hong Kong", "Hungary", "India", "Indonesia", "Ireland", "Israel", "Italy", "Japan", "Kuwait", "Luxembourg", "Malaysia", "Mexico", "Morocco", "Netherlands", "New Zealand", "Nigeria", "Norway", "Oman", "Pakistan", "Panama", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Saudi Arabia", "Singapore", "South Africa", "South Korea", "Spain", "Sweden", "Switzerland", "Taiwan", "Thailand", "Turkey", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Venezuela", "Vietnam"}));
 		combo_country.setSelectedIndex(7);
 		combo_country.setBounds(400, 36, 120, 20);
@@ -503,6 +508,7 @@ public class Window {
 		panel_settings.add(lblRadiuskm);
 		
 		combo_type = new JComboBox();
+		combo_type.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		combo_type.setToolTipText("jobsite for job boards, employer for direct employers");
 		combo_type.setModel(new DefaultComboBoxModel(new String[] {"employer", "jobsite"}));
 		combo_type.setSelectedIndex(0);
@@ -510,18 +516,21 @@ public class Window {
 		panel_settings.add(combo_type);
 		
 		combo_jobtype = new JComboBox();
+		combo_jobtype.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		combo_jobtype.setModel(new DefaultComboBoxModel(new String[] {"fulltime", "parttime", "contract", "internship", "temporary"}));
 		combo_jobtype.setSelectedIndex(0);
 		combo_jobtype.setBounds(140, 92, 120, 20);
 		panel_settings.add(combo_jobtype);
 		
 		spinner_age = new JSpinner();
+		spinner_age.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		spinner_age.setToolTipText("how long ago was the ad posted?");
 		spinner_age.setModel(new SpinnerNumberModel(15, 0, 30, 1));
 		spinner_age.setBounds(270, 92, 120, 20);
 		panel_settings.add(spinner_age);
 		
 		spinner_radius = new JSpinner();
+		spinner_radius.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		spinner_radius.setToolTipText("distance from your chosen location");
 		spinner_radius.setModel(new SpinnerNumberModel(10, 10, 250, 10));
 		spinner_radius.setBounds(400, 92, 120, 20);
@@ -533,19 +542,22 @@ public class Window {
 		panel_settings.add(lblAdLimit);
 		
 		spinner_limit = new JSpinner();
+		spinner_limit.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		spinner_limit.setToolTipText("the number of ads shown");
 		spinner_limit.setModel(new SpinnerNumberModel(100, 25, 1000, 5));
 		spinner_limit.setBounds(10, 148, 120, 20);
 		panel_settings.add(spinner_limit);
 		
 		chckbxCheckForEmail = new JCheckBox("Check for email");
+		chckbxCheckForEmail.setBackground(Color.WHITE);
 		chckbxCheckForEmail.setToolTipText("scan postings for email addresses for direct contact");
-		chckbxCheckForEmail.setBounds(10, 175, 176, 23);
+		chckbxCheckForEmail.setBounds(10, 175, 188, 23);
 		panel_settings.add(chckbxCheckForEmail);
 		
 		chckbxCheckForPhone = new JCheckBox("Check for phone number");
+		chckbxCheckForPhone.setBackground(Color.WHITE);
 		chckbxCheckForPhone.setToolTipText("scan postings for phone numbers for direct contact, experimental!");
-		chckbxCheckForPhone.setBounds(10, 201, 224, 23);
+		chckbxCheckForPhone.setBounds(10, 201, 188, 23);
 		panel_settings.add(chckbxCheckForPhone);
 		
 		btnSearch = new JButton("Search");
@@ -745,7 +757,7 @@ public class Window {
 		job_table.getColumnModel().getColumn(5).setMinWidth(80);
 
 		job_table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		job_table.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		job_table.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		job_table.setAutoCreateRowSorter(true);
 
 		job_table.getTableHeader().addMouseListener(new MouseAdapter() {
