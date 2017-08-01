@@ -411,7 +411,6 @@ public class Window {
 						+ "To expand an ad, double click it to open in a browser.", "How to use this tool", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
-		menuHow.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/javafx/scene/control/skin/caspian/dialog-confirm.png")));
 		mnHelp.add(menuHow);
 		
 		JMenuItem menuAbout = new JMenuItem("About...");
@@ -421,7 +420,6 @@ public class Window {
 				JOptionPane.showMessageDialog(null, "Jobula Search Tool\r\nVersion 2.6.1\r\nAuthor: neptuneDockyard", "About", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
-		menuAbout.setSelectedIcon(new ImageIcon(Window.class.getResource("/com/sun/javafx/scene/control/skin/caspian/dialog-information.png")));
 		mnHelp.add(menuAbout);
 		
 		JPanel panel = new JPanel();
@@ -549,13 +547,13 @@ public class Window {
 		chckbxCheckForEmail = new JCheckBox("Check for email");
 		chckbxCheckForEmail.setBackground(Color.WHITE);
 		chckbxCheckForEmail.setToolTipText("scan postings for email addresses for direct contact");
-		chckbxCheckForEmail.setBounds(10, 175, 188, 23);
+		chckbxCheckForEmail.setBounds(10, 175, 238, 23);
 		panel_settings.add(chckbxCheckForEmail);
 		
 		chckbxCheckForPhone = new JCheckBox("Check for phone number");
 		chckbxCheckForPhone.setBackground(Color.WHITE);
 		chckbxCheckForPhone.setToolTipText("scan postings for phone numbers for direct contact, experimental!");
-		chckbxCheckForPhone.setBounds(10, 201, 188, 23);
+		chckbxCheckForPhone.setBounds(10, 201, 238, 23);
 		panel_settings.add(chckbxCheckForPhone);
 		
 		btnSearch = new JButton("Search");
